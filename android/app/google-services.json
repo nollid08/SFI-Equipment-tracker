@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "489761858597",
+    "project_id": "sfi-equipment-tracker",
+    "storage_bucket": "sfi-equipment-tracker.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:489761858597:android:79ad41a0e0d67accf78bcc",
+        "android_client_info": {
+          "package_name": "com.example.sfi_equipment_tracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "489761858597-sjhsu2vt2n5e7a4f2i6rebsl0ekuquqr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBjvh-IQzCsmIRYQREhlOwyYLbrNRR0UOg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "489761858597-cg1i2ut14rtc1lcbdfehsd9qi10h8cg8.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "489761858597-47jqdl965nn346f5b3avmep4fqjnkpfr.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.sfiEquipmentTracker"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
