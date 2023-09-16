@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sfi_equipment_tracker/widgets/add_new_equipment_form.dart';
+import 'package:sfi_equipment_tracker/widgets/restock_equipment_form.dart';
 import '../constants.dart';
 import '../widgets/nav_drawer.dart';
 
@@ -8,10 +9,6 @@ class AddNewStock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // return Scaffold(
-
-    // body: const AddBrandNewStockForm(),
-    // );
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -45,7 +42,7 @@ class AddNewStock extends StatelessWidget {
         body: const TabBarView(
           children: [
             AddNewEquipmentForm(),
-            Icon(Icons.directions_transit),
+            RestockEquipmentForm(),
           ],
         ),
       ),

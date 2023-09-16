@@ -1,32 +1,29 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_image_picker/form_builder_image_picker.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:sfi_equipment_tracker/providers/account_provider.dart';
 import 'package:sfi_equipment_tracker/providers/equipment_provider.dart';
 import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
 import 'package:sfi_equipment_tracker/screens/register_gate.dart';
 
-class AddNewEquipmentForm extends StatefulWidget {
-  const AddNewEquipmentForm({Key? key}) : super(key: key);
+class RestockEquipmentForm extends StatefulWidget {
+  const RestockEquipmentForm({Key? key}) : super(key: key);
 
   @override
-  State<AddNewEquipmentForm> createState() {
-    return _AddNewEquipmentFormState();
+  State<RestockEquipmentForm> createState() {
+    return _RestockEquipmentFormState();
   }
 }
 
-class _AddNewEquipmentFormState extends State<AddNewEquipmentForm> {
+class _RestockEquipmentFormState extends State<RestockEquipmentForm> {
   bool autoValidate = true;
   bool readOnly = false;
   bool showSegmentedControl = true;
   final _formKey = GlobalKey<FormBuilderState>();
   void _onChanged(dynamic val) => debugPrint(val.toString());
-  String convertToId(String input) {
-    List<String> words = input.split(' ');
-    String capitalized = words.map((word) => word.toUpperCase()).join('_');
-    return capitalized;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,23 +40,42 @@ class _AddNewEquipmentFormState extends State<AddNewEquipmentForm> {
                 padding: const EdgeInsets.all(8),
                 child: Column(
                   children: <Widget>[
-                    FormBuilderTextField(
-                      name: 'equipment_name',
-                      decoration: InputDecoration(
-                        hintText: 'Equipment Name',
-                        hintStyle: const TextStyle(fontSize: 16),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(
-                            width: 0,
-                            style: BorderStyle.solid,
-                          ),
-                        ),
-                      ),
-                      validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.required(),
-                      ]),
-                    ),
+                    FutureBuilder(
+                        future: Equipment.get(),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<Equipment> snapshot) {
+                          switch (snapshot.connectionState) {
+                            case ConnectionState.none:
+                              return const CircularProgressIndicator();
+                            case ConnectionState.waiting:
+                              return const CircularProgressIndicator();
+                            default:
+                              if (snapshot.hasError) {
+                                return Text('Error: ${snapshot.error}');
+                              } else {
+                                final List<EquipmentItem>? inventoryRefs =
+                                    snapshot.data?.equipmentList;
+                                if (inventoryRefs != null) {
+                                  return FormBuilderDropdown(
+                                    name: "equipment",
+                                    items: inventoryRefs
+                                        .map(
+                                          (inventoryRefs) => DropdownMenuItem(
+                                            child: Text(inventoryRefs.name),
+                                            value: inventoryRefs,
+                                          ),
+                                        )
+                                        .toList(),
+                                    validator: FormBuilderValidators.compose([
+                                      FormBuilderValidators.required(),
+                                    ]),
+                                  );
+                                } else {
+                                  return const Text("No Equipment Found!!!");
+                                }
+                              }
+                          }
+                        }),
                     FormBuilderSlider(
                       name: 'equipment_quantity',
                       validator: FormBuilderValidators.compose([
@@ -75,15 +91,6 @@ class _AddNewEquipmentFormState extends State<AddNewEquipmentForm> {
                       decoration: const InputDecoration(
                         labelText: 'Equipment Quantity',
                       ),
-                    ),
-                    FormBuilderImagePicker(
-                      name: 'equipment_image',
-                      decoration:
-                          const InputDecoration(labelText: 'Pick Photo'),
-                      maxImages: 1,
-                      validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.required(),
-                      ]),
                     ),
                     FutureBuilder(
                         future: Inventory.getAllInventoryRefs(),
@@ -144,46 +151,15 @@ class _AddNewEquipmentFormState extends State<AddNewEquipmentForm> {
       // Check to make sure user is signed in
       if (user != null) {
         final Map data = _formKey.currentState!.value;
-        final String equipmentName = data["equipment_name"];
+        final EquipmentItem equipment = data["equipment"];
         final int equipmentQuantity = data["equipment_quantity"].toInt();
-        final equipmentImage = data["equipment_image"][0];
         final InventoryReference recipientInventory = data["recipient"];
-
-        final bool hasEquipmentRegistered = await Equipment.registerEquipment(
-          inventoryRef: recipientInventory.inventoryReference,
-          name: equipmentName,
-          quantity: equipmentQuantity,
-          image: equipmentImage,
-        );
-        if (hasEquipmentRegistered) {
-          _formKey.currentState?.reset();
-        } else {
-          if (mounted) {
-            return showDialog<void>(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text('Uh Oh!'),
-                    content: const SingleChildScrollView(
-                      child: ListBody(
-                        children: <Widget>[
-                          Text('This item already exists!'),
-                          Text('(Try giving it a different name)'),
-                        ],
-                      ),
-                    ),
-                    actions: <Widget>[
-                      TextButton(
-                        child: const Text('I Understand'),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                    ],
-                  );
-                });
-          }
-        }
+        print("fdfg");
+        //Update the equipment quantity on cloud firestore using function from equipment provider
+        Equipment.updateEquipmentQuantity(
+            equipmentId: equipment.id,
+            quantity: equipmentQuantity,
+            inventoryRef: recipientInventory.inventoryReference);
       } else {
         Navigator.pushReplacement(
           context,
