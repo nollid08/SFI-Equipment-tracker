@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:sfi_equipment_tracker/constants.dart';
 import 'package:sfi_equipment_tracker/widgets/nav_drawer.dart';
@@ -17,63 +19,89 @@ class PersonalInventory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'My Inventory',
-          style: TextStyle(
-            color: Colors.white,
+    if (FirebaseAuth.instance.currentUser != null) {
+      final uid = FirebaseAuth.instance.currentUser!.uid;
+      print(uid);
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            'My Inventory',
+            style: TextStyle(
+              color: Colors.white,
+            ),
           ),
+          centerTitle: true,
+          backgroundColor: SchoolFitnessBlue,
+          foregroundColor: Colors.white,
+          actions: [
+            IconButton(
+              iconSize: 30,
+              onPressed: () => {print('hello')},
+              icon: const Icon(Icons.search_outlined),
+            ),
+            IconButton(
+              iconSize: 30,
+              onPressed: () => {print('hello')},
+              icon: const Icon(Icons.filter_alt_outlined),
+            ),
+          ],
         ),
-        centerTitle: true,
-        backgroundColor: SchoolFitnessBlue,
-        foregroundColor: Colors.white,
-        actions: [
-          IconButton(
-            iconSize: 30,
-            onPressed: () => {print('hello')},
-            icon: const Icon(Icons.search_outlined),
-          ),
-          IconButton(
-            iconSize: 30,
-            onPressed: () => {print('hello')},
-            icon: const Icon(Icons.filter_alt_outlined),
-          ),
-        ],
-      ),
-      drawer: const NavDrawer(),
-      body: FutureBuilder(
-          future: getInventory("eztCYCYXUJb8t1sAUdItwBVZEry2"),
-          builder: (BuildContext context,
-              AsyncSnapshot<Map<dynamic, dynamic>?> snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              if (snapshot.hasData) {
-                final Map? inventory = snapshot.data;
-                if (inventory != null) {
-                  return ListView.builder(
-                    itemCount: inventory.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      String key = inventory.keys.elementAt(index);
-                      return Column(
-                        children: <Widget>[
-                          ListTile(
-                            title: Text("$key"),
-                            subtitle: Text("${inventory[key]}"),
-                          ),
-                          const Divider(
-                            height: 2.0,
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                }
-              }
-            } else if (snapshot.connectionState == ConnectionState.none) {
-              return const Text("No connection. Error No #000001");
-            }
-            return const Center(child: CircularProgressIndicator());
-          }),
+        drawer: const NavDrawer(),
+        body: Inventory(uid: uid),
+      );
+    } else {
+      return const Text('error #00002');
+    }
+  }
+}
+
+class Inventory extends StatefulWidget {
+  final String uid;
+
+  Inventory({Key? key, required this.uid}) : super(key: key);
+
+  @override
+  _InventoryState createState() => _InventoryState();
+}
+
+class _InventoryState extends State<Inventory> {
+  late final Stream<QuerySnapshot> _inventoryStream = FirebaseFirestore.instance
+      .collection('users')
+      .doc(widget.uid)
+      .collection("inventory")
+      .snapshots();
+
+  _InventoryState();
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: _inventoryStream,
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasError) {
+          print("error");
+          return const Text('Something went wrong');
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          print("loading");
+          return const Text("Loading");
+        }
+        return ListView(
+          children: snapshot.data!.docs
+              .map((DocumentSnapshot document) {
+                Map<String, dynamic> data =
+                    document.data()! as Map<String, dynamic>;
+                print(data.toString());
+                return ListTile(
+                  title: Text(document.id.toString()),
+                  subtitle: Text(data['quantity'].toString()),
+                );
+              })
+              .toList()
+              .cast(),
+        );
+      },
     );
   }
 }

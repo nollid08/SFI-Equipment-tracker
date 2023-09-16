@@ -1,8 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_image_picker/form_builder_image_picker.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:sfi_equipment_tracker/providers/account_provider.dart';
 import 'package:sfi_equipment_tracker/providers/equipment_provider.dart';
+import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
+import 'package:sfi_equipment_tracker/screens/register_gate.dart';
 
 class AddNewEquipmentForm extends StatefulWidget {
   const AddNewEquipmentForm({Key? key}) : super(key: key);
@@ -18,7 +22,6 @@ class _AddNewEquipmentFormState extends State<AddNewEquipmentForm> {
   bool readOnly = false;
   bool showSegmentedControl = true;
   final _formKey = GlobalKey<FormBuilderState>();
-
   void _onChanged(dynamic val) => debugPrint(val.toString());
   String convertToId(String input) {
     List<String> words = input.split(' ');
@@ -80,6 +83,42 @@ class _AddNewEquipmentFormState extends State<AddNewEquipmentForm> {
                       FormBuilderValidators.required(),
                     ]),
                   ),
+                  FutureBuilder(
+                      future: Inventory.getAllInventoryRefs(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<List<InventoryReference>> snapshot) {
+                        switch (snapshot.connectionState) {
+                          case ConnectionState.none:
+                            return Text('Press button to start');
+                          case ConnectionState.waiting:
+                            return Text('Awaiting result...');
+                          default:
+                            if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            } else {
+                              final List<InventoryReference>? inventoryRefs =
+                                  snapshot.data;
+                              if (inventoryRefs != null) {
+                                return FormBuilderDropdown(
+                                  name: "recipient",
+                                  items: inventoryRefs
+                                      .map(
+                                        (inventoryRefs) => DropdownMenuItem(
+                                          child: Text(inventoryRefs.name),
+                                          value: inventoryRefs,
+                                        ),
+                                      )
+                                      .toList(),
+                                  validator: FormBuilderValidators.compose([
+                                    FormBuilderValidators.required(),
+                                  ]),
+                                );
+                              } else {
+                                throw ("No Inventories Found!!!");
+                              }
+                            }
+                        }
+                      }),
                   MaterialButton(
                     color: Theme.of(context).colorScheme.secondary,
                     onPressed: submitForm,
@@ -97,16 +136,59 @@ class _AddNewEquipmentFormState extends State<AddNewEquipmentForm> {
 
   void submitForm() async {
     if (_formKey.currentState?.saveAndValidate() ?? false) {
-      final Map data = _formKey.currentState!.value;
-      final String equipmentName = data["equipment_name"];
-      final int equipmentQuantity = data["equipment_quantity"].toInt();
-      final equipmentImage = data["equipment_image"][0];
+      final FirebaseAuth auth = FirebaseAuth.instance;
+      final User? user = auth.currentUser;
+      // Check to make sure user is signed in
+      if (user != null) {
+        final Map data = _formKey.currentState!.value;
+        final String equipmentName = data["equipment_name"];
+        final int equipmentQuantity = data["equipment_quantity"].toInt();
+        final equipmentImage = data["equipment_image"][0];
+        final InventoryReference recipientInventory = data["recipient"];
 
-      addNewEquipment(
-        name: equipmentName,
-        quantity: equipmentQuantity,
-        image: equipmentImage,
-      );
+        final bool hasEquipmentRegistered = await registerEquipment(
+          inventoryRef: recipientInventory.inventoryReference,
+          name: equipmentName,
+          quantity: equipmentQuantity,
+          image: equipmentImage,
+        );
+        if (hasEquipmentRegistered) {
+          _formKey.currentState?.reset();
+        } else {
+          if (mounted) {
+            return showDialog<void>(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Uh Oh!'),
+                    content: const SingleChildScrollView(
+                      child: ListBody(
+                        children: <Widget>[
+                          Text('This item already exists!'),
+                          Text('(Try giving it a different name)'),
+                        ],
+                      ),
+                    ),
+                    actions: <Widget>[
+                      TextButton(
+                        child: const Text('I Understand'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  );
+                });
+          }
+        }
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (BuildContext context) => const RegisterGate(),
+          ),
+        );
+      }
     }
   }
 }
