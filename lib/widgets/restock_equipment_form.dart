@@ -1,10 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_image_picker/form_builder_image_picker.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:sfi_equipment_tracker/providers/account_provider.dart';
 import 'package:sfi_equipment_tracker/providers/equipment_provider.dart';
 import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
 import 'package:sfi_equipment_tracker/screens/register_gate.dart';
@@ -61,8 +58,8 @@ class _RestockEquipmentFormState extends State<RestockEquipmentForm> {
                                     items: inventoryRefs
                                         .map(
                                           (inventoryRefs) => DropdownMenuItem(
-                                            child: Text(inventoryRefs.name),
                                             value: inventoryRefs,
+                                            child: Text(inventoryRefs.name),
                                           ),
                                         )
                                         .toList(),
@@ -113,8 +110,8 @@ class _RestockEquipmentFormState extends State<RestockEquipmentForm> {
                                     items: inventoryRefs
                                         .map(
                                           (inventoryRefs) => DropdownMenuItem(
-                                            child: Text(inventoryRefs.name),
                                             value: inventoryRefs,
+                                            child: Text(inventoryRefs.name),
                                           ),
                                         )
                                         .toList(),
@@ -154,8 +151,6 @@ class _RestockEquipmentFormState extends State<RestockEquipmentForm> {
         final EquipmentItem equipment = data["equipment"];
         final int equipmentQuantity = data["equipment_quantity"].toInt();
         final InventoryReference recipientInventory = data["recipient"];
-        print("fdfg");
-        //Update the equipment quantity on cloud firestore using function from equipment provider
         Equipment.updateEquipmentQuantity(
             equipmentId: equipment.id,
             quantity: equipmentQuantity,

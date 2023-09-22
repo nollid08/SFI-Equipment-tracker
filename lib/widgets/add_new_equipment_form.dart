@@ -106,8 +106,8 @@ class _AddNewEquipmentFormState extends State<AddNewEquipmentForm> {
                                     items: inventoryRefs
                                         .map(
                                           (inventoryRefs) => DropdownMenuItem(
-                                            child: Text(inventoryRefs.name),
                                             value: inventoryRefs,
+                                            child: Text(inventoryRefs.name),
                                           ),
                                         )
                                         .toList(),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sfi_equipment_tracker/screens/add_new_stock.dart';
+import 'package:sfi_equipment_tracker/screens/all_equipment.dart';
 
 class NavDrawer extends StatelessWidget {
   const NavDrawer({
@@ -34,10 +35,14 @@ class NavDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            title: const Text('Business'),
+            title: const Text('All Equipment'),
             selected: false,
             onTap: () {
               Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AllEquipment()),
+              );
             },
           ),
           ListTile(
@@ -51,7 +56,7 @@ class NavDrawer extends StatelessWidget {
             height: 2,
           ),
           Padding(
-            padding: EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8.0),
             child: Center(
               child: Text(
                 'Admin',
@@ -69,7 +74,7 @@ class NavDrawer extends StatelessWidget {
               Navigator.pop(context);
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => AddNewStock()),
+                MaterialPageRoute(builder: (context) => const AddNewStock()),
               );
             },
           ),

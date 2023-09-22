@@ -126,3 +126,75 @@ class EquipmentItem {
       required this.totalQuantity,
       required this.imageRef});
 }
+
+class EquipmentUserRelationships {
+  final EquipmentItem equipmentItem;
+  final List<EquipmentUserRelationship> relationships;
+
+  EquipmentUserRelationships({
+    required this.equipmentItem,
+    required this.relationships,
+  });
+
+  static Future<EquipmentUserRelationships> get(String equipmentId) async {
+    final db = FirebaseFirestore.instance;
+    final QuerySnapshot<Map<String, dynamic>> userSnapshot =
+        await db.collection("users").get();
+    final DocumentSnapshot<Map<String, dynamic>> equipmentSnapshot =
+        await db.collection("equipment").doc(equipmentId).get();
+    final Map<String, dynamic> equipmentData =
+        equipmentSnapshot.data() as Map<String, dynamic>;
+
+    final String name = equipmentData["name"];
+    final String imageRef = equipmentData["imageRef"];
+    final int totalQuantity = equipmentData["totalQuantity"];
+    final EquipmentUserRelationships equipmentUserRelationships =
+        EquipmentUserRelationships(
+      equipmentItem: EquipmentItem(
+        id: equipmentId,
+        name: name,
+        totalQuantity: totalQuantity,
+        imageRef: imageRef,
+      ),
+      relationships: [],
+    );
+    for (var docSnapshot in userSnapshot.docs) {
+      final String userId = docSnapshot.id;
+      final DocumentReference<Map<String, dynamic>> userRef =
+          db.collection("users").doc(userId);
+      final CollectionReference<Map<String, dynamic>> inventoryRef =
+          userRef.collection("inventory");
+      final DocumentSnapshot doc = await inventoryRef.doc(equipmentId).get();
+      if (doc.exists) {
+        final Account user = await Account.get("mkhK7z6u64gq7gyqt2zXD9sWIRV2");
+        final String userName = user.name;
+        final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        final int quantity = data["quantity"];
+        final EquipmentUserRelationship equipmentUserRelationship =
+            EquipmentUserRelationship(
+          userId: userId,
+          userName: userName,
+          equipmentCount: quantity,
+        );
+        equipmentUserRelationships.relationships.add(equipmentUserRelationship);
+        print("Successfully completed");
+      } else {
+        print("No such document!");
+      }
+    }
+
+    return equipmentUserRelationships;
+  }
+}
+
+class EquipmentUserRelationship {
+  final String userId;
+  final String userName;
+  final int equipmentCount;
+
+  EquipmentUserRelationship({
+    required this.userId,
+    required this.userName,
+    required this.equipmentCount,
+  });
+}
