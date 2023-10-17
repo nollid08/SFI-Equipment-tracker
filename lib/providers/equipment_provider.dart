@@ -87,7 +87,6 @@ class Equipment {
     }
   }
 
-  //Create a static function that takes in an equipment id and quantity and updates the equipment quantity in both the global inventory and the user's inventory
   static void updateEquipmentQuantity(
       {required String equipmentId,
       required int quantity,

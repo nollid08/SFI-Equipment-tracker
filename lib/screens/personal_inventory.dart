@@ -4,15 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:sfi_equipment_tracker/constants.dart';
 import 'package:sfi_equipment_tracker/widgets/nav_drawer.dart';
 
-Future<Map?> getInventory(String uid) async {
-  final db = FirebaseFirestore.instance;
-  final docRef = db.collection("users").doc(uid);
-  final request = await docRef.get();
-  final data = request.data();
-  final Map? inventory = data?["inventory"];
-  return inventory;
-}
-
 class PersonalInventory extends StatelessWidget {
   const PersonalInventory({super.key});
 

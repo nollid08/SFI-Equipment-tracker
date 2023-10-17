@@ -3,7 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:sfi_equipment_tracker/constants.dart';
-import 'package:sfi_equipment_tracker/screens/equipment_card.dart';
+import 'package:sfi_equipment_tracker/widgets/equipment_card.dart';
+import 'package:sfi_equipment_tracker/widgets/equipment_image.dart';
 import 'package:sfi_equipment_tracker/widgets/nav_drawer.dart';
 
 Future<Map?> getInventory(String uid) async {
@@ -59,7 +60,8 @@ class AllEquipment extends StatelessWidget {
 class GlobalInventoryListView extends StatefulWidget {
   final String uid;
 
-  const GlobalInventoryListView({Key? key, required this.uid}) : super(key: key);
+  const GlobalInventoryListView({Key? key, required this.uid})
+      : super(key: key);
 
   @override
   State<GlobalInventoryListView> createState() =>
@@ -95,29 +97,13 @@ class _GlobalInventoryListViewState extends State<GlobalInventoryListView> {
             final String equipmentId = document.id;
             final String name = data['name'];
             final int quantity = data['totalQuantity'];
-            final String image = data['imageRef'];
+            final String imageRef = data['imageRef'];
 
-            final downloadURL =
-                FirebaseStorage.instance.ref().child(image).getDownloadURL();
             return ListTile(
-              leading: FutureBuilder(
-                  future: downloadURL,
-                  builder: (BuildContext context, AsyncSnapshot imageUrl) {
-                    if (imageUrl.hasData) {
-                      return Image.network(imageUrl.data);
-                    } else {
-                      return const CircularProgressIndicator();
-                    }
-                  }),
+              leading: EquipmentImage(imageRef: imageRef),
               title: Text(name),
               subtitle: Text('Total Quantity: $quantity'),
               onTap: () {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) =>
-                //         EquipmentCard(equipmentId: equipmentId),
-                //   ),
                 showModalBottomSheet(
                   context: context,
                   builder: (context) {

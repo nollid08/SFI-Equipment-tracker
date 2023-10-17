@@ -42,6 +42,39 @@ class Inventory {
     return Inventory(inventory: inventory);
   }
 
+  static Future<Inventory> getFromSnapshot(
+      QuerySnapshot<Map<String, dynamic>> inventorySnapshot) async {
+    final List<InventoryItem> inventory = [];
+
+    final db = FirebaseFirestore.instance;
+
+    for (final inventoryItem in inventorySnapshot.docs) {
+      final Map<String, dynamic> baseItemData = inventoryItem.data();
+
+      final String id = inventoryItem.id;
+      final int quantity = baseItemData["quantity"];
+      // Get name and image
+
+      final globalInventoryRef = db.collection("equipment").doc(id);
+      final doc = await globalInventoryRef.get();
+      final supplementaryItemData = doc.data() as Map<String, dynamic>;
+
+      final String imageRef = supplementaryItemData["imageRef"];
+      final String name = supplementaryItemData["name"];
+
+      inventory.add(
+        InventoryItem(
+          id: id,
+          name: name,
+          quantity: quantity,
+          imageRef: imageRef,
+        ),
+      );
+    }
+
+    return Inventory(inventory: inventory);
+  }
+
   static Future<List<InventoryReference>> getAllInventoryRefs() async {
     final List<InventoryReference> inventoryRefs = [];
     final db = FirebaseFirestore.instance;
@@ -54,7 +87,7 @@ class Inventory {
       final CollectionReference<Map<String, dynamic>> reference =
           db.collection("users").doc(userSnapshot.id).collection("inventory");
       final InventoryReference inventoryReference = InventoryReference(
-          id: id, type: type, name: name, inventoryReference: reference);
+          uid: id, type: type, name: name, inventoryReference: reference);
       inventoryRefs.add(inventoryReference);
     }
 
@@ -76,13 +109,13 @@ class InventoryItem {
 }
 
 class InventoryReference {
-  final String id;
+  final String uid;
   final String type;
   final String name;
   final CollectionReference<Map<String, dynamic>> inventoryReference;
 
   InventoryReference(
-      {required this.id,
+      {required this.uid,
       required this.type,
       required this.name,
       required this.inventoryReference});
