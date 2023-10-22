@@ -1,8 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
 import 'package:sfi_equipment_tracker/screens/add_new_stock.dart';
 import 'package:sfi_equipment_tracker/screens/all_equipment.dart';
+import 'package:sfi_equipment_tracker/screens/auth_gate.dart';
 import 'package:sfi_equipment_tracker/screens/inventory_screen.dart';
+import 'package:sfi_equipment_tracker/widgets/inventories_list.dart';
 
 class NavDrawer extends StatelessWidget {
   const NavDrawer({
@@ -32,8 +35,29 @@ class NavDrawer extends StatelessWidget {
           ListTile(
             title: const Text('My Inventory'),
             selected: true,
-            onTap: () {
-              Navigator.pop(context);
+            onTap: () async {
+              if (FirebaseAuth.instance.currentUser != null) {
+                String currentUserUid = FirebaseAuth.instance.currentUser!.uid;
+                final InventoryReference inventoryRef =
+                    await InventoryReference.get(currentUserUid);
+                if (context.mounted) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => InventoryScreen(
+                        inventoryReference: inventoryRef,
+                      ),
+                    ),
+                  );
+                }
+              } else {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => const AuthGate(),
+                  ),
+                );
+              }
             },
           ),
           ListTile(
@@ -47,42 +71,7 @@ class NavDrawer extends StatelessWidget {
               );
             },
           ),
-          FutureBuilder(
-              future: Inventory.getAllInventoryRefs(),
-              builder:
-                  (context, AsyncSnapshot<List<InventoryReference>> snapshot) {
-                if (snapshot.hasData) {
-                  final List<ListTile> listTiles = [];
-                  final List<InventoryReference> inventoryRefs = snapshot.data!;
-                  inventoryRefs.forEach((inventoryRef) {
-                    final String name = inventoryRef.name;
-                    final String listTileTitle = "${name}'s Inventory";
-                    print(listTileTitle);
-                    final listTile = ListTile(
-                      title: Text(listTileTitle),
-                      selected: false,
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => InventoryScreen(
-                                    inventoryReference: inventoryRef,
-                                  )),
-                        );
-                      },
-                    );
-                    listTiles.add(listTile);
-                  });
-                  return Column(
-                    children: listTiles,
-                  );
-                } else if (snapshot.hasError) {
-                  return const Text('Something went wrong');
-                } else {
-                  return const Center(child: CircularProgressIndicator());
-                }
-              }),
+          const InventoriesList(),
           const Divider(
             height: 2,
           ),

@@ -86,7 +86,7 @@ class _AddNewEquipmentFormState extends State<AddNewEquipmentForm> {
                       ]),
                     ),
                     FutureBuilder(
-                        future: Inventory.getAllInventoryRefs(),
+                        future: InventoryReference.getAll(),
                         builder: (BuildContext context,
                             AsyncSnapshot<List<InventoryReference>> snapshot) {
                           switch (snapshot.connectionState) {

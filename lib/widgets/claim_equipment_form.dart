@@ -85,7 +85,7 @@ class _ClaimEquipmentFormState extends State<ClaimEquipmentForm> {
                       ]),
                     ),
                     FutureBuilder(
-                        future: Inventory.getAllInventoryRefs(),
+                        future: InventoryReference.getAll(),
                         builder: (BuildContext context,
                             AsyncSnapshot<List<InventoryReference>> snapshot) {
                           switch (snapshot.connectionState) {

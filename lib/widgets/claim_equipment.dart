@@ -1,30 +1,24 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:path/path.dart';
 import 'package:sfi_equipment_tracker/constants.dart';
 import 'package:sfi_equipment_tracker/providers/account_provider.dart';
-import 'package:sfi_equipment_tracker/providers/equipment_provider.dart';
 import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
-import 'package:sfi_equipment_tracker/widgets/claim_equipment_form.dart';
 
-class ClaimEquipment extends StatefulWidget {
+class ClaimEquipmentDialog extends StatefulWidget {
   final InventoryItem inventoryItem;
 
-  const ClaimEquipment(
-      {super.key,
-      required this.inventoryItem,
-      required this.close,
-      required this.inventoryOwner});
+  const ClaimEquipmentDialog(
+      {super.key, required this.inventoryItem, required this.inventoryOwner});
 
-  final Function() close;
   final Account inventoryOwner;
 
   @override
-  State<ClaimEquipment> createState() => _ClaimEquipmentState();
+  State<ClaimEquipmentDialog> createState() => _ClaimEquipmentDialogState();
 }
 
-class _ClaimEquipmentState extends State<ClaimEquipment> {
+class _ClaimEquipmentDialogState extends State<ClaimEquipmentDialog> {
   bool autoValidate = true;
   bool readOnly = false;
   bool showSegmentedControl = true;
@@ -110,6 +104,18 @@ class _ClaimEquipmentState extends State<ClaimEquipment> {
                 onPressed: () {
                   if (_formKey.currentState?.saveAndValidate() ?? false) {
                     debugPrint(_formKey.currentState?.value.toString());
+                    // Save the slider value as an int
+                    final int transferQuota = currentEquipmenQuantity;
+                    final FirebaseAuth auth = FirebaseAuth.instance;
+                    final User user = auth.currentUser!;
+                    final uid = user.uid.toString();
+                    Inventory.claimEquipmentItem(
+                      originAccount: widget.inventoryOwner,
+                      currentUserUid: uid,
+                      equipmentId: equipmentItem.id,
+                      transferQuota: transferQuota,
+                    );
+                    Navigator.pop(context);
                   } else {
                     debugPrint(_formKey.currentState?.value.toString());
                     debugPrint('validation failed');

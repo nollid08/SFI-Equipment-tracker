@@ -10,6 +10,7 @@ class InventoryListView extends StatelessWidget {
   final String searchCriteria;
   final Account inventoryOwner;
   final bool tiledView;
+  final bool isPersonalInventory;
 
   const InventoryListView({
     Key? key,
@@ -17,6 +18,7 @@ class InventoryListView extends StatelessWidget {
     required this.searchCriteria,
     required this.tiledView,
     required this.inventoryOwner,
+    required this.isPersonalInventory,
   }) : super(key: key);
 
   @override
@@ -35,7 +37,7 @@ class InventoryListView extends StatelessWidget {
             builder: (BuildContext context, AsyncSnapshot<Inventory> snapshot) {
               if (snapshot.hasData) {
                 final Inventory inventory = snapshot.data!;
-                return ListView.builder(
+                return ListView.separated(
                   itemCount: inventory.inventory.length,
                   itemBuilder: (BuildContext context, int index) {
                     final InventoryItem item = inventory.inventory[index];
@@ -44,24 +46,22 @@ class InventoryListView extends StatelessWidget {
                         leading: EquipmentImage(imageRef: item.imageRef),
                         title: Text(item.name),
                         subtitle: Text(item.quantity.toString()),
-                        onTap: () async {
-                          await showDialog(
-                            context: context,
-                            builder: (BuildContext context) => AlertDialog(
-                              content: ClaimEquipment(
-                                close: () => {
-                                  print("close dialog"),
-                                },
+                        trailing: isPersonalInventory
+                            ? SendButton(
                                 inventoryOwner: inventoryOwner,
-                                inventoryItem: item,
+                                item: item,
+                              )
+                            : ClaimButton(
+                                inventoryOwner: inventoryOwner,
+                                item: item,
                               ),
-                            ),
-                          );
-                        },
                       );
                     } else {
                       return const SizedBox.shrink();
                     }
+                  },
+                  separatorBuilder: (context, index) {
+                    return const Divider();
                   },
                 );
               } else if (snapshot.hasError) {
@@ -76,6 +76,65 @@ class InventoryListView extends StatelessWidget {
         } else {
           return const Text("Loading");
         }
+      },
+    );
+  }
+}
+
+class ClaimButton extends StatelessWidget {
+  const ClaimButton({
+    super.key,
+    required this.inventoryOwner,
+    required this.item,
+  });
+
+  final Account inventoryOwner;
+  final InventoryItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlinedButton(
+      child: const Text("Claim"),
+      onPressed: () async {
+        await showDialog(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            content: ClaimEquipmentDialog(
+              inventoryOwner: inventoryOwner,
+              inventoryItem: item,
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class SendButton extends StatelessWidget {
+  const SendButton({
+    super.key,
+    required this.inventoryOwner,
+    required this.item,
+  });
+
+  final Account inventoryOwner;
+  final InventoryItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlinedButton(
+      child: const Text("Send"),
+      onPressed: () async {
+        print("Send Equipment");
+        // await showDialog(
+        //   context: context,
+        //   builder: (BuildContext context) => AlertDialog(
+        //     content: ClaimEquipmentDialog(
+        //       inventoryOwner: inventoryOwner,
+        //       inventoryItem: item,
+        //     ),
+        //   ),
+        // );
       },
     );
   }

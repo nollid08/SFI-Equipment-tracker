@@ -90,7 +90,7 @@ class _RestockEquipmentFormState extends State<RestockEquipmentForm> {
                       ),
                     ),
                     FutureBuilder(
-                        future: Inventory.getAllInventoryRefs(),
+                        future: InventoryReference.getAll(),
                         builder: (BuildContext context,
                             AsyncSnapshot<List<InventoryReference>> snapshot) {
                           switch (snapshot.connectionState) {

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:sfi_equipment_tracker/providers/account_provider.dart';
 
 class Inventory {
   final List<InventoryItem> inventory;
@@ -75,23 +76,55 @@ class Inventory {
     return Inventory(inventory: inventory);
   }
 
-  static Future<List<InventoryReference>> getAllInventoryRefs() async {
-    final List<InventoryReference> inventoryRefs = [];
+  static void claimEquipmentItem({
+    required Account originAccount,
+    required String currentUserUid,
+    required String equipmentId,
+    required int transferQuota,
+  }) async {
+    // Get the count of the equipment in the originAccount's inventory
     final db = FirebaseFirestore.instance;
-    final QuerySnapshot usersSnapshot = await db.collection("users").get();
-    for (var userSnapshot in usersSnapshot.docs) {
-      final String id = userSnapshot.id;
-      const String type = "coach";
-      final Map userData = userSnapshot.data() as Map;
-      final String name = userData["name"];
-      final CollectionReference<Map<String, dynamic>> reference =
-          db.collection("users").doc(userSnapshot.id).collection("inventory");
-      final InventoryReference inventoryReference = InventoryReference(
-          uid: id, type: type, name: name, inventoryReference: reference);
-      inventoryRefs.add(inventoryReference);
-    }
+    final originAccountRef = db.collection("users").doc(originAccount.uid);
+    final originInventoryRef = originAccountRef.collection("inventory");
+    final originEquipmentRef = originInventoryRef.doc(equipmentId);
+    final originEquipmentDoc = await originEquipmentRef.get();
+    final originEquipmentData =
+        originEquipmentDoc.data() as Map<String, dynamic>;
+    final int originEquipmentCount = originEquipmentData["quantity"];
 
-    return inventoryRefs;
+    // Check if the equipment is in the current users inventory, if yes, Get the count of the equipment in the originAccount's inventory, if not, print "!!"
+    final currentUserRef = db.collection("users").doc(currentUserUid);
+    final currentUserInventoryRef = currentUserRef.collection("inventory");
+    final currentUserEquipmentRef = currentUserInventoryRef.doc(equipmentId);
+    final currentUserEquipmentDoc = await currentUserEquipmentRef.get();
+    final currentUserEquipmentData =
+        currentUserEquipmentDoc.data() as Map<String, dynamic>;
+    int currentUserEquipmentCount = 0;
+    // If the equipment is in the current users inventory, update the count of the equipment in the current users inventory
+    if (currentUserEquipmentDoc.exists) {
+      currentUserEquipmentCount = currentUserEquipmentData["quantity"];
+    }
+    final int originAccountEquipmentCount =
+        originEquipmentCount - transferQuota;
+    originEquipmentRef.update({"quantity": originAccountEquipmentCount});
+    final int newCurrentUserEquipmentCount =
+        currentUserEquipmentCount + transferQuota;
+    currentUserEquipmentRef.update({"quantity": newCurrentUserEquipmentCount});
+
+    cleanupInventory(originInventoryRef);
+  }
+
+  static void cleanupInventory(
+      CollectionReference<Map<String, dynamic>> inventoryRef) async {
+    final QuerySnapshot<Map<String, dynamic>> inventorySnapshot =
+        await inventoryRef.get();
+    for (var inventoryItem in inventorySnapshot.docs) {
+      final Map<String, dynamic> inventoryItemData = inventoryItem.data();
+      final int quantity = inventoryItemData["quantity"];
+      if (quantity == 0) {
+        inventoryItem.reference.delete();
+      }
+    }
   }
 }
 
@@ -119,4 +152,38 @@ class InventoryReference {
       required this.type,
       required this.name,
       required this.inventoryReference});
+
+  static Future<InventoryReference> get(String uid) async {
+    final db = FirebaseFirestore.instance;
+    final DocumentSnapshot userSnapshot =
+        await db.collection("users").doc(uid).get();
+    final Map userData = userSnapshot.data() as Map;
+    const String type = "coach";
+    final String name = userData["name"];
+    final CollectionReference<Map<String, dynamic>> reference =
+        db.collection("users").doc(userSnapshot.id).collection("inventory");
+    final InventoryReference inventoryReference = InventoryReference(
+        uid: uid, type: type, name: name, inventoryReference: reference);
+
+    return inventoryReference;
+  }
+
+  static Future<List<InventoryReference>> getAll() async {
+    final List<InventoryReference> inventoryRefs = [];
+    final db = FirebaseFirestore.instance;
+    final QuerySnapshot usersSnapshot = await db.collection("users").get();
+    for (var userSnapshot in usersSnapshot.docs) {
+      final String id = userSnapshot.id;
+      const String type = "coach";
+      final Map userData = userSnapshot.data() as Map;
+      final String name = userData["name"];
+      final CollectionReference<Map<String, dynamic>> reference =
+          db.collection("users").doc(userSnapshot.id).collection("inventory");
+      final InventoryReference inventoryReference = InventoryReference(
+          uid: id, type: type, name: name, inventoryReference: reference);
+      inventoryRefs.add(inventoryReference);
+    }
+
+    return inventoryRefs;
+  }
 }
