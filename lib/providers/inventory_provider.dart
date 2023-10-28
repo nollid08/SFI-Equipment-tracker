@@ -76,15 +76,15 @@ class Inventory {
     return Inventory(inventory: inventory);
   }
 
-  static void claimEquipmentItem({
-    required Account originAccount,
-    required String currentUserUid,
+  static void transferEquipmentItem({
+    required String origineeUid,
+    required String recipientUid,
     required String equipmentId,
     required int transferQuota,
   }) async {
     // Get the count of the equipment in the originAccount's inventory
     final db = FirebaseFirestore.instance;
-    final originAccountRef = db.collection("users").doc(originAccount.uid);
+    final originAccountRef = db.collection("users").doc(origineeUid);
     final originInventoryRef = originAccountRef.collection("inventory");
     final originEquipmentRef = originInventoryRef.doc(equipmentId);
     final originEquipmentDoc = await originEquipmentRef.get();
@@ -92,29 +92,36 @@ class Inventory {
         originEquipmentDoc.data() as Map<String, dynamic>;
     final int originEquipmentCount = originEquipmentData["quantity"];
 
-    // Check if the equipment is in the current users inventory, if yes, Get the count of the equipment in the originAccount's inventory, if not, print "!!"
-    final currentUserRef = db.collection("users").doc(currentUserUid);
-    final currentUserInventoryRef = currentUserRef.collection("inventory");
-    final currentUserEquipmentRef = currentUserInventoryRef.doc(equipmentId);
-    final currentUserEquipmentDoc = await currentUserEquipmentRef.get();
-    final currentUserEquipmentData =
-        currentUserEquipmentDoc.data() as Map<String, dynamic>;
-    int currentUserEquipmentCount = 0;
+    final recipientRef = db.collection("users").doc(recipientUid);
+    final recipientInventoryRef = recipientRef.collection("inventory");
+    final recipientEquipmentRef = recipientInventoryRef.doc(equipmentId);
+    final recipientEquipmentDoc = await recipientEquipmentRef.get();
+    int recipientEquipmentCount = 0;
+
     // If the equipment is in the current users inventory, update the count of the equipment in the current users inventory
-    if (currentUserEquipmentDoc.exists) {
-      currentUserEquipmentCount = currentUserEquipmentData["quantity"];
+    if (recipientEquipmentDoc.exists) {
+      final recipientEquipmentData =
+          recipientEquipmentDoc.data() as Map<String, dynamic>;
+      recipientEquipmentCount = recipientEquipmentData["quantity"];
     }
+
     final int originAccountEquipmentCount =
         originEquipmentCount - transferQuota;
-    originEquipmentRef.update({"quantity": originAccountEquipmentCount});
-    final int newCurrentUserEquipmentCount =
-        currentUserEquipmentCount + transferQuota;
-    currentUserEquipmentRef.update({"quantity": newCurrentUserEquipmentCount});
-
-    cleanupInventory(originInventoryRef);
+    await originEquipmentRef.update({"quantity": originAccountEquipmentCount});
+    final int newrecipientEquipmentCount =
+        recipientEquipmentCount + transferQuota;
+    if (recipientEquipmentDoc.exists) {
+      await recipientEquipmentRef
+          .update({"quantity": newrecipientEquipmentCount});
+    } else {
+      await recipientEquipmentRef.set({"quantity": newrecipientEquipmentCount});
+    }
+    // Get rid of equipment items with a count of 0!
+    cleanUpInventory(originInventoryRef);
+    cleanUpInventory(recipientInventoryRef);
   }
 
-  static void cleanupInventory(
+  static void cleanUpInventory(
       CollectionReference<Map<String, dynamic>> inventoryRef) async {
     final QuerySnapshot<Map<String, dynamic>> inventorySnapshot =
         await inventoryRef.get();

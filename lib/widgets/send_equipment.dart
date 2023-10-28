@@ -6,23 +6,26 @@ import 'package:sfi_equipment_tracker/constants.dart';
 import 'package:sfi_equipment_tracker/providers/account_provider.dart';
 import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
 
-class ClaimEquipmentDialog extends StatefulWidget {
+class SendEquipmentDialog extends StatefulWidget {
   final InventoryItem inventoryItem;
+  final List<InventoryReference> inventoryRefs;
 
-  const ClaimEquipmentDialog(
-      {super.key, required this.inventoryItem, required this.inventoryOwner});
-
-  final Account inventoryOwner;
+  const SendEquipmentDialog({
+    super.key,
+    required this.inventoryItem,
+    required List<InventoryReference> this.inventoryRefs,
+  });
 
   @override
-  State<ClaimEquipmentDialog> createState() => _ClaimEquipmentDialogState();
+  State<SendEquipmentDialog> createState() => _SendEquipmentDialogState();
 }
 
-class _ClaimEquipmentDialogState extends State<ClaimEquipmentDialog> {
+class _SendEquipmentDialogState extends State<SendEquipmentDialog> {
   bool autoValidate = true;
   bool readOnly = false;
   bool showSegmentedControl = true;
   int currentEquipmenQuantity = -1;
+  String currentRecipient = "(No-Recipient-Selected)";
   final _formKey = GlobalKey<FormBuilderState>();
   void _onChanged(dynamic val) {
     debugPrint(val.toString());
@@ -36,9 +39,9 @@ class _ClaimEquipmentDialogState extends State<ClaimEquipmentDialog> {
     _onChanged(val);
   }
 
-  void _onSubmit(dynamic val) {
+  void _onRecipientChanged(dynamic val) {
     setState(() {
-      currentEquipmenQuantity = val.round();
+      currentRecipient = val.name;
     });
 
     _onChanged(val);
@@ -49,6 +52,22 @@ class _ClaimEquipmentDialogState extends State<ClaimEquipmentDialog> {
     final InventoryItem equipmentItem = widget.inventoryItem;
     final double equipmentCount = equipmentItem.quantity.toDouble();
     final int countMidpoint = (equipmentCount / 2).round();
+    final List<InventoryReference> inventoryRefs = widget.inventoryRefs;
+    List<DropdownMenuItem<InventoryReference>> items = [];
+    if (FirebaseAuth.instance.currentUser != null) {
+      final uid = FirebaseAuth.instance.currentUser!.uid;
+      for (final element in inventoryRefs) {
+        if (element.uid != uid) {
+          items.add(DropdownMenuItem(
+            value: element,
+            child: Text(element.name),
+          ));
+        }
+      }
+    } else {
+      throw ("No User Logged In!!!");
+    }
+
     setState(() {
       if (currentEquipmenQuantity == -1) {
         currentEquipmenQuantity = countMidpoint;
@@ -71,6 +90,14 @@ class _ClaimEquipmentDialogState extends State<ClaimEquipmentDialog> {
                 equipmentCount: equipmentCount,
                 countMidpoint: countMidpoint,
               ),
+              FormBuilderDropdown(
+                name: "recipient",
+                items: items,
+                onChanged: (value) => _onRecipientChanged(value),
+                validator: FormBuilderValidators.compose([
+                  FormBuilderValidators.required(),
+                ]),
+              ),
               FormBuilderCheckbox(
                 name: 'accept_terms',
                 initialValue: false,
@@ -78,7 +105,7 @@ class _ClaimEquipmentDialogState extends State<ClaimEquipmentDialog> {
                 title: TransferConfirmationText(
                   equipmentCount: currentEquipmenQuantity,
                   equipmentItemName: equipmentItem.name,
-                  inventoryOwnerFullName: widget.inventoryOwner.name,
+                  inventoryOwnerFullName: currentRecipient,
                 ),
                 validator: FormBuilderValidators.equal(
                   true,
@@ -95,12 +122,15 @@ class _ClaimEquipmentDialogState extends State<ClaimEquipmentDialog> {
                     debugPrint(_formKey.currentState?.value.toString());
                     // Save the slider value as an int
                     final int transferQuota = currentEquipmenQuantity;
+                    final Map data = _formKey.currentState!.value;
+                    final InventoryReference recipientInventory =
+                        data["recipient"];
                     final FirebaseAuth auth = FirebaseAuth.instance;
                     final User user = auth.currentUser!;
                     final uid = user.uid.toString();
                     Inventory.transferEquipmentItem(
-                      origineeUid: widget.inventoryOwner.uid,
-                      recipientUid: uid,
+                      origineeUid: uid,
+                      recipientUid: recipientInventory.uid,
                       equipmentId: equipmentItem.id,
                       transferQuota: transferQuota,
                     );
@@ -154,14 +184,13 @@ class TransferConfirmationText extends StatelessWidget {
             text: 'from ',
             style: TextStyle(color: Colors.black),
           ),
-          TextSpan(
-            text: "$inventoryOwnerFirstName's inventory ",
-            style: const TextStyle(
-                fontWeight: FontWeight.bold, color: Colors.black),
-          ),
           const TextSpan(
-            text: ' to my inventory',
-            style: TextStyle(color: Colors.black),
+            text: "my inventory",
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+          ),
+          TextSpan(
+            text: " to $inventoryOwnerFirstName's inventory",
+            style: const TextStyle(color: Colors.black),
           ),
         ],
       ),

@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
 
 class Account {
   final String name;

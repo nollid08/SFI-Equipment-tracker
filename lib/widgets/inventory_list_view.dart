@@ -4,6 +4,7 @@ import 'package:sfi_equipment_tracker/providers/account_provider.dart';
 import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
 import 'package:sfi_equipment_tracker/widgets/equipment_image.dart';
 import 'package:sfi_equipment_tracker/widgets/claim_equipment.dart';
+import 'package:sfi_equipment_tracker/widgets/send_equipment.dart';
 
 class InventoryListView extends StatelessWidget {
   final CollectionReference<Map<String, dynamic>> inventory;
@@ -126,15 +127,18 @@ class SendButton extends StatelessWidget {
       child: const Text("Send"),
       onPressed: () async {
         print("Send Equipment");
-        // await showDialog(
-        //   context: context,
-        //   builder: (BuildContext context) => AlertDialog(
-        //     content: ClaimEquipmentDialog(
-        //       inventoryOwner: inventoryOwner,
-        //       inventoryItem: item,
-        //     ),
-        //   ),
-        // );
+        final inventoryRefs = await InventoryReference.getAll();
+        if (context.mounted) {
+          await showDialog(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              content: SendEquipmentDialog(
+                inventoryItem: item,
+                inventoryRefs: inventoryRefs,
+              ),
+            ),
+          );
+        }
       },
     );
   }

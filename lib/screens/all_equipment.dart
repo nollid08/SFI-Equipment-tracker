@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:sfi_equipment_tracker/constants.dart';
 import 'package:sfi_equipment_tracker/widgets/equipment_card.dart';
