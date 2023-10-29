@@ -38,7 +38,9 @@ class AddNewStock extends StatelessWidget {
           backgroundColor: SchoolFitnessBlue,
           foregroundColor: Colors.white,
         ),
-        drawer: const NavDrawer(),
+        drawer: const NavDrawer(
+          currentPageId: "add-new-stock",
+        ),
         body: const TabBarView(
           children: [
             AddNewEquipmentForm(),

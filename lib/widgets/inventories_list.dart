@@ -5,8 +5,10 @@ import 'package:sfi_equipment_tracker/screens/auth_gate.dart';
 import 'package:sfi_equipment_tracker/screens/inventory_screen.dart';
 
 class InventoriesList extends StatelessWidget {
+  final String currentPageId;
   const InventoriesList({
     super.key,
+    required this.currentPageId,
   });
 
   @override
@@ -27,7 +29,8 @@ class InventoriesList extends StatelessWidget {
                   print(listTileTitle);
                   final listTile = ListTile(
                       title: Text(listTileTitle),
-                      selected: false,
+                      selected:
+                          currentPageId == 'inventory-${inventoryRef.uid}',
                       onTap: () {
                         Navigator.pop(context);
                         Navigator.push(

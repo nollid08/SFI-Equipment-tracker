@@ -8,8 +8,11 @@ import 'package:sfi_equipment_tracker/screens/inventory_screen.dart';
 import 'package:sfi_equipment_tracker/widgets/inventories_list.dart';
 
 class NavDrawer extends StatelessWidget {
+  final String currentPageId;
+
   const NavDrawer({
     super.key,
+    required this.currentPageId,
   });
 
   @override
@@ -34,7 +37,7 @@ class NavDrawer extends StatelessWidget {
           ),
           ListTile(
             title: const Text('My Inventory'),
-            selected: true,
+            selected: currentPageId == 'inventory-personal',
             onTap: () async {
               if (FirebaseAuth.instance.currentUser != null) {
                 String currentUserUid = FirebaseAuth.instance.currentUser!.uid;
@@ -62,7 +65,7 @@ class NavDrawer extends StatelessWidget {
           ),
           ListTile(
             title: const Text('All Equipment'),
-            selected: false,
+            selected: currentPageId == 'global-inventory',
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
@@ -71,7 +74,9 @@ class NavDrawer extends StatelessWidget {
               );
             },
           ),
-          const InventoriesList(),
+          InventoriesList(
+            currentPageId: currentPageId,
+          ),
           const Divider(
             height: 2,
           ),
@@ -88,8 +93,10 @@ class NavDrawer extends StatelessWidget {
             ),
           ),
           ListTile(
-            title: const Text('Add New Stock'),
-            selected: false,
+            title: const Text(
+              'Add New Stock',
+            ),
+            selected: currentPageId == 'add-new-stock',
             onTap: () {
               Navigator.pop(context);
               Navigator.push(

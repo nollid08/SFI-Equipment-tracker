@@ -62,7 +62,12 @@ class InventoryListView extends StatelessWidget {
                     }
                   },
                   separatorBuilder: (context, index) {
-                    return const Divider();
+                    final InventoryItem item = inventory.inventory[index];
+                    if (item.name.toLowerCase().contains(searchCriteria)) {
+                      return const Divider();
+                    } else {
+                      return const SizedBox.shrink();
+                    }
                   },
                 );
               } else if (snapshot.hasError) {

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sfi_equipment_tracker/constants.dart';
@@ -6,6 +7,7 @@ import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
 import 'package:sfi_equipment_tracker/screens/auth_gate.dart';
 import 'package:sfi_equipment_tracker/widgets/inventory_list_view.dart';
 import 'package:sfi_equipment_tracker/widgets/nav_drawer.dart';
+import 'package:sfi_equipment_tracker/widgets/search_delegates.dart';
 
 class InventoryScreen extends StatefulWidget {
   final InventoryReference inventoryReference;
@@ -45,17 +47,31 @@ class _InventoryScreenState extends State<InventoryScreen> {
             actions: [
               IconButton(
                 iconSize: 30,
-                onPressed: () => {print('hello')},
+                onPressed: () => {
+                  showSearch(
+                    context: context,
+                    delegate: InventorySearchDelegate(
+                        name: name,
+                        uid: uid,
+                        isPersonalInventory: isPersonalInventory),
+                  )
+                },
                 icon: const Icon(Icons.search_outlined),
               ),
-              IconButton(
-                iconSize: 30,
-                onPressed: () => {print('hello')},
-                icon: const Icon(Icons.grid_view_outlined),
-              ),
+              // IconButton(
+              //   iconSize: 30,
+              //   onPressed: () => {print('hello')},
+              //   icon: const Icon(Icons.grid_view_outlined),
+              // ),
             ],
           ),
-          drawer: const NavDrawer(),
+          drawer: isPersonalInventory
+              ? const NavDrawer(
+                  currentPageId: "inventory-personal",
+                )
+              : NavDrawer(
+                  currentPageId: "inventory-$uid",
+                ),
           body: InventoryListView(
             inventoryOwner: Account(
               name: name,

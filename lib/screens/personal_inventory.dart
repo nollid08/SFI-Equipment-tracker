@@ -36,7 +36,9 @@ class PersonalInventory extends StatelessWidget {
             ),
           ],
         ),
-        drawer: const NavDrawer(),
+        drawer: const NavDrawer(
+          currentPageId: "legacy-personal-inventory",
+        ),
         body: Inventory(uid: uid),
       );
     } else {
