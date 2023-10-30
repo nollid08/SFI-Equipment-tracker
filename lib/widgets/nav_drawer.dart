@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:sfi_equipment_tracker/providers/account_provider.dart';
 import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
 import 'package:sfi_equipment_tracker/screens/add_new_stock.dart';
 import 'package:sfi_equipment_tracker/screens/all_equipment.dart';
@@ -41,14 +42,14 @@ class NavDrawer extends StatelessWidget {
             onTap: () async {
               if (FirebaseAuth.instance.currentUser != null) {
                 String currentUserUid = FirebaseAuth.instance.currentUser!.uid;
-                final InventoryReference inventoryRef =
-                    await InventoryReference.get(currentUserUid);
+                final InventoryOwnerRelationship inventoryRef =
+                    await InventoryOwnerRelationship.get(currentUserUid);
                 if (context.mounted) {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => InventoryScreen(
-                        inventoryReference: inventoryRef,
+                        invOwnRel: inventoryRef,
                       ),
                     ),
                   );
@@ -77,34 +78,56 @@ class NavDrawer extends StatelessWidget {
           InventoriesList(
             currentPageId: currentPageId,
           ),
-          const Divider(
-            height: 2,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Center(
-              child: Text(
-                'Admin',
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red.shade900,
-                    fontSize: 18),
+          FutureBuilder(
+              future: Account.getCurrent(
+                context: context,
               ),
-            ),
-          ),
-          ListTile(
-            title: const Text(
-              'Add New Stock',
-            ),
-            selected: currentPageId == 'add-new-stock',
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const AddNewStock()),
-              );
-            },
-          ),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (snapshot.hasData) {
+                  Account account = snapshot.data;
+                  if (account.type == AccountType.admin) {
+                    return Column(
+                      children: [
+                        const Divider(
+                          height: 2,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Center(
+                            child: Text(
+                              'Admin',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.red.shade900,
+                                  fontSize: 18),
+                            ),
+                          ),
+                        ),
+                        ListTile(
+                          title: const Text(
+                            'Add New Stock',
+                          ),
+                          selected: currentPageId == 'add-new-stock',
+                          onTap: () {
+                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const AddNewStock()),
+                            );
+                          },
+                        ),
+                      ],
+                    );
+                  } else {
+                    return const SizedBox.shrink();
+                  }
+                } else if (snapshot.hasError) {
+                  return const Text('Error 5407');
+                } else {
+                  return const Center(child: CircularProgressIndicator());
+                }
+              }),
         ],
       ),
     );

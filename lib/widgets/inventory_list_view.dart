@@ -7,25 +7,23 @@ import 'package:sfi_equipment_tracker/widgets/claim_equipment.dart';
 import 'package:sfi_equipment_tracker/widgets/send_equipment.dart';
 
 class InventoryListView extends StatelessWidget {
-  final CollectionReference<Map<String, dynamic>> inventory;
   final String searchCriteria;
-  final Account inventoryOwner;
   final bool tiledView;
+  final InventoryOwnerRelationship invOwnRel;
   final bool isPersonalInventory;
 
   const InventoryListView({
     Key? key,
-    required this.inventory,
     required this.searchCriteria,
     required this.tiledView,
-    required this.inventoryOwner,
+    required this.invOwnRel,
     required this.isPersonalInventory,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-      stream: inventory.snapshots(),
+      stream: invOwnRel.inventoryReference.snapshots(),
       builder: (
         BuildContext context,
         AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot,
@@ -49,11 +47,11 @@ class InventoryListView extends StatelessWidget {
                         subtitle: Text(item.quantity.toString()),
                         trailing: isPersonalInventory
                             ? SendButton(
-                                inventoryOwner: inventoryOwner,
+                                inventoryOwner: invOwnRel.owner,
                                 item: item,
                               )
                             : ClaimButton(
-                                inventoryOwner: inventoryOwner,
+                                inventoryOwner: invOwnRel.owner,
                                 item: item,
                               ),
                       );
@@ -132,7 +130,7 @@ class SendButton extends StatelessWidget {
       child: const Text("Send"),
       onPressed: () async {
         print("Send Equipment");
-        final inventoryRefs = await InventoryReference.getAll();
+        final inventoryRefs = await InventoryOwnerRelationship.getAll();
         if (context.mounted) {
           await showDialog(
             context: context,

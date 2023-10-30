@@ -90,9 +90,10 @@ class _RestockEquipmentFormState extends State<RestockEquipmentForm> {
                       ),
                     ),
                     FutureBuilder(
-                        future: InventoryReference.getAll(),
+                        future: InventoryOwnerRelationship.getAll(),
                         builder: (BuildContext context,
-                            AsyncSnapshot<List<InventoryReference>> snapshot) {
+                            AsyncSnapshot<List<InventoryOwnerRelationship>>
+                                snapshot) {
                           switch (snapshot.connectionState) {
                             case ConnectionState.none:
                               return const CircularProgressIndicator();
@@ -102,16 +103,16 @@ class _RestockEquipmentFormState extends State<RestockEquipmentForm> {
                               if (snapshot.hasError) {
                                 return Text('Error: ${snapshot.error}');
                               } else {
-                                final List<InventoryReference>? inventoryRefs =
-                                    snapshot.data;
-                                if (inventoryRefs != null) {
+                                final List<InventoryOwnerRelationship>?
+                                    invOwnRels = snapshot.data;
+                                if (invOwnRels != null) {
                                   return FormBuilderDropdown(
                                     name: "recipient",
-                                    items: inventoryRefs
+                                    items: invOwnRels
                                         .map(
-                                          (inventoryRefs) => DropdownMenuItem(
-                                            value: inventoryRefs,
-                                            child: Text(inventoryRefs.name),
+                                          (invOwnRel) => DropdownMenuItem(
+                                            value: invOwnRel,
+                                            child: Text(invOwnRel.owner.name),
                                           ),
                                         )
                                         .toList(),
@@ -150,7 +151,7 @@ class _RestockEquipmentFormState extends State<RestockEquipmentForm> {
         final Map data = _formKey.currentState!.value;
         final EquipmentItem equipment = data["equipment"];
         final int equipmentQuantity = data["equipment_quantity"].toInt();
-        final InventoryReference recipientInventory = data["recipient"];
+        final InventoryOwnerRelationship recipientInventory = data["recipient"];
         Equipment.updateEquipmentQuantity(
             equipmentId: equipment.id,
             quantity: equipmentQuantity,

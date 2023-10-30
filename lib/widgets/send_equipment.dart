@@ -8,12 +8,12 @@ import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
 
 class SendEquipmentDialog extends StatefulWidget {
   final InventoryItem inventoryItem;
-  final List<InventoryReference> inventoryRefs;
+  final List<InventoryOwnerRelationship> inventoryRefs;
 
   const SendEquipmentDialog({
     super.key,
     required this.inventoryItem,
-    required List<InventoryReference> this.inventoryRefs,
+    required List<InventoryOwnerRelationship> this.inventoryRefs,
   });
 
   @override
@@ -52,15 +52,15 @@ class _SendEquipmentDialogState extends State<SendEquipmentDialog> {
     final InventoryItem equipmentItem = widget.inventoryItem;
     final double equipmentCount = equipmentItem.quantity.toDouble();
     final int countMidpoint = (equipmentCount / 2).round();
-    final List<InventoryReference> inventoryRefs = widget.inventoryRefs;
-    List<DropdownMenuItem<InventoryReference>> items = [];
+    final List<InventoryOwnerRelationship> invOwnRels = widget.inventoryRefs;
+    List<DropdownMenuItem<InventoryOwnerRelationship>> items = [];
     if (FirebaseAuth.instance.currentUser != null) {
       final uid = FirebaseAuth.instance.currentUser!.uid;
-      for (final element in inventoryRefs) {
-        if (element.uid != uid) {
+      for (final invOwnRel in invOwnRels) {
+        if (invOwnRel.owner.uid != uid) {
           items.add(DropdownMenuItem(
-            value: element,
-            child: Text(element.name),
+            value: invOwnRel,
+            child: Text(invOwnRel.owner.name),
           ));
         }
       }
@@ -123,14 +123,14 @@ class _SendEquipmentDialogState extends State<SendEquipmentDialog> {
                     // Save the slider value as an int
                     final int transferQuota = currentEquipmenQuantity;
                     final Map data = _formKey.currentState!.value;
-                    final InventoryReference recipientInventory =
+                    final InventoryOwnerRelationship recipientInvOwnRel =
                         data["recipient"];
                     final FirebaseAuth auth = FirebaseAuth.instance;
                     final User user = auth.currentUser!;
                     final uid = user.uid.toString();
                     Inventory.transferEquipmentItem(
                       origineeUid: uid,
-                      recipientUid: recipientInventory.uid,
+                      recipientUid: recipientInvOwnRel.owner.uid,
                       equipmentId: equipmentItem.id,
                       transferQuota: transferQuota,
                     );

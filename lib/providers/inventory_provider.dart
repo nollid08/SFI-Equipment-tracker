@@ -148,46 +148,35 @@ class InventoryItem {
       required this.imageRef});
 }
 
-class InventoryReference {
-  final String uid;
-  final String type;
-  final String name;
+class InventoryOwnerRelationship {
+  final Account owner;
   final CollectionReference<Map<String, dynamic>> inventoryReference;
 
-  InventoryReference(
-      {required this.uid,
-      required this.type,
-      required this.name,
-      required this.inventoryReference});
+  InventoryOwnerRelationship(
+      {required this.owner, required this.inventoryReference});
 
-  static Future<InventoryReference> get(String uid) async {
+  static Future<InventoryOwnerRelationship> get(String uid) async {
     final db = FirebaseFirestore.instance;
-    final DocumentSnapshot userSnapshot =
-        await db.collection("users").doc(uid).get();
-    final Map userData = userSnapshot.data() as Map;
-    const String type = "coach";
-    final String name = userData["name"];
+    final Account owner = await Account.get(uid);
     final CollectionReference<Map<String, dynamic>> reference =
-        db.collection("users").doc(userSnapshot.id).collection("inventory");
-    final InventoryReference inventoryReference = InventoryReference(
-        uid: uid, type: type, name: name, inventoryReference: reference);
+        db.collection("users").doc(owner.uid).collection("inventory");
+    final InventoryOwnerRelationship inventoryReference =
+        InventoryOwnerRelationship(
+      owner: owner,
+      inventoryReference: reference,
+    );
 
     return inventoryReference;
   }
 
-  static Future<List<InventoryReference>> getAll() async {
-    final List<InventoryReference> inventoryRefs = [];
+  static Future<List<InventoryOwnerRelationship>> getAll() async {
+    final List<InventoryOwnerRelationship> inventoryRefs = [];
     final db = FirebaseFirestore.instance;
     final QuerySnapshot usersSnapshot = await db.collection("users").get();
     for (var userSnapshot in usersSnapshot.docs) {
-      final String id = userSnapshot.id;
-      const String type = "coach";
-      final Map userData = userSnapshot.data() as Map;
-      final String name = userData["name"];
-      final CollectionReference<Map<String, dynamic>> reference =
-          db.collection("users").doc(userSnapshot.id).collection("inventory");
-      final InventoryReference inventoryReference = InventoryReference(
-          uid: id, type: type, name: name, inventoryReference: reference);
+      final String uid = userSnapshot.id;
+      final InventoryOwnerRelationship inventoryReference =
+          await InventoryOwnerRelationship.get(uid);
       inventoryRefs.add(inventoryReference);
     }
 

@@ -1,12 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:sfi_equipment_tracker/providers/account_provider.dart';
+import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
 import 'package:sfi_equipment_tracker/widgets/global_inventory_list_view.dart';
 import 'package:sfi_equipment_tracker/widgets/inventory_list_view.dart';
 
 class InventorySearchDelegate extends SearchDelegate {
-  final String name;
-  final String uid;
+  final InventoryOwnerRelationship invOwnRel;
   final bool isPersonalInventory;
 
   InventorySearchDelegate({
@@ -15,8 +15,7 @@ class InventorySearchDelegate extends SearchDelegate {
     super.searchFieldDecorationTheme,
     super.keyboardType,
     super.textInputAction,
-    required this.name,
-    required this.uid,
+    required this.invOwnRel,
     required this.isPersonalInventory,
   });
 
@@ -43,16 +42,9 @@ class InventorySearchDelegate extends SearchDelegate {
   @override
   Widget buildResults(BuildContext context) {
     return InventoryListView(
-      inventoryOwner: Account(
-        name: name,
-        uid: uid,
-      ),
-      inventory: FirebaseFirestore.instance
-          .collection("users")
-          .doc(uid)
-          .collection("inventory"),
+      invOwnRel: invOwnRel,
       isPersonalInventory: isPersonalInventory,
-      searchCriteria: query,
+      searchCriteria: "",
       tiledView: false,
     );
   }
@@ -60,16 +52,9 @@ class InventorySearchDelegate extends SearchDelegate {
   @override
   Widget buildSuggestions(BuildContext context) {
     return InventoryListView(
-      inventoryOwner: Account(
-        name: name,
-        uid: uid,
-      ),
-      inventory: FirebaseFirestore.instance
-          .collection("users")
-          .doc(uid)
-          .collection("inventory"),
+      invOwnRel: invOwnRel,
       isPersonalInventory: isPersonalInventory,
-      searchCriteria: query,
+      searchCriteria: "",
       tiledView: false,
     );
   }

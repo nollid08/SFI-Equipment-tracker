@@ -14,30 +14,32 @@ class InventoriesList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: InventoryReference.getAll(),
-        builder: (context, AsyncSnapshot<List<InventoryReference>> snapshot) {
+        future: InventoryOwnerRelationship.getAll(),
+        builder: (context,
+            AsyncSnapshot<List<InventoryOwnerRelationship>> snapshot) {
           if (snapshot.hasData) {
             if (FirebaseAuth.instance.currentUser != null) {
               String currentUserUid = FirebaseAuth.instance.currentUser!.uid;
               final List<ListTile> listTiles = [];
-              final List<InventoryReference> inventoryRefs = snapshot.data!;
-              inventoryRefs.forEach((inventoryRef) {
-                if (inventoryRef.uid != currentUserUid) {
-                  final String name = inventoryRef.name;
-                  final String listTileTitle = "${name}'s Inventory";
+              final List<InventoryOwnerRelationship> invOwnRels =
+                  snapshot.data!;
+              invOwnRels.forEach((invOwnRel) {
+                if (invOwnRel.owner.uid != currentUserUid) {
+                  final String name = invOwnRel.owner.name;
+                  final String listTileTitle = "$name's Inventory";
 
                   print(listTileTitle);
                   final listTile = ListTile(
                       title: Text(listTileTitle),
                       selected:
-                          currentPageId == 'inventory-${inventoryRef.uid}',
+                          currentPageId == 'inventory-${invOwnRel.owner.uid}',
                       onTap: () {
                         Navigator.pop(context);
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => InventoryScreen(
-                                    inventoryReference: inventoryRef,
+                                    invOwnRel: invOwnRel,
                                   )),
                         );
                       });

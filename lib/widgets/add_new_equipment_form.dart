@@ -86,9 +86,10 @@ class _AddNewEquipmentFormState extends State<AddNewEquipmentForm> {
                       ]),
                     ),
                     FutureBuilder(
-                        future: InventoryReference.getAll(),
+                        future: InventoryOwnerRelationship.getAll(),
                         builder: (BuildContext context,
-                            AsyncSnapshot<List<InventoryReference>> snapshot) {
+                            AsyncSnapshot<List<InventoryOwnerRelationship>>
+                                snapshot) {
                           switch (snapshot.connectionState) {
                             case ConnectionState.none:
                               return const CircularProgressIndicator();
@@ -98,16 +99,16 @@ class _AddNewEquipmentFormState extends State<AddNewEquipmentForm> {
                               if (snapshot.hasError) {
                                 return Text('Error: ${snapshot.error}');
                               } else {
-                                final List<InventoryReference>? inventoryRefs =
-                                    snapshot.data;
-                                if (inventoryRefs != null) {
+                                final List<InventoryOwnerRelationship>?
+                                    invOwnRels = snapshot.data;
+                                if (invOwnRels != null) {
                                   return FormBuilderDropdown(
                                     name: "recipient",
-                                    items: inventoryRefs
+                                    items: invOwnRels
                                         .map(
-                                          (inventoryRefs) => DropdownMenuItem(
-                                            value: inventoryRefs,
-                                            child: Text(inventoryRefs.name),
+                                          (invOwnRel) => DropdownMenuItem(
+                                            value: invOwnRel,
+                                            child: Text(invOwnRel.owner.name),
                                           ),
                                         )
                                         .toList(),
@@ -147,7 +148,7 @@ class _AddNewEquipmentFormState extends State<AddNewEquipmentForm> {
         final String equipmentName = data["equipment_name"];
         final int equipmentQuantity = data["equipment_quantity"].toInt();
         final equipmentImage = data["equipment_image"][0];
-        final InventoryReference recipientInventory = data["recipient"];
+        final InventoryOwnerRelationship recipientInventory = data["recipient"];
 
         final bool hasEquipmentRegistered = await Equipment.registerEquipment(
           inventoryRef: recipientInventory.inventoryReference,
