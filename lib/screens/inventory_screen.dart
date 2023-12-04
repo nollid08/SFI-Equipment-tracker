@@ -4,6 +4,7 @@ import 'package:sfi_equipment_tracker/constants.dart';
 import 'package:sfi_equipment_tracker/providers/account_provider.dart';
 import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
 import 'package:sfi_equipment_tracker/screens/auth_gate.dart';
+import 'package:sfi_equipment_tracker/widgets/adapted_scaffold.dart';
 import 'package:sfi_equipment_tracker/widgets/inventory_list_view.dart';
 import 'package:sfi_equipment_tracker/widgets/nav_drawer.dart';
 import 'package:sfi_equipment_tracker/widgets/search_delegates.dart';
@@ -36,44 +37,24 @@ class _InventoryScreenState extends State<InventoryScreen> {
         inventoryTitle = name;
       }
 
-      return Scaffold(
-          appBar: AppBar(
-            title: Text(
-              inventoryTitle,
-              style: const TextStyle(
-                color: Colors.white,
-              ),
-            ),
-            centerTitle: true,
-            backgroundColor: SchoolFitnessBlue,
-            foregroundColor: Colors.white,
-            actions: [
-              IconButton(
-                iconSize: 30,
-                onPressed: () => {
-                  showSearch(
-                    context: context,
-                    delegate: InventorySearchDelegate(
-                        invOwnRel: widget.invOwnRel,
-                        isPersonalInventory: isPersonalInventory),
-                  )
-                },
-                icon: const Icon(Icons.search_outlined),
-              ),
-              // IconButton(
-              //   iconSize: 30,
-              //   onPressed: () => {print('hello')},
-              //   icon: const Icon(Icons.grid_view_outlined),
-              // ),
-            ],
-          ),
-          drawer: isPersonalInventory
-              ? const NavDrawer(
-                  currentPageId: "inventory-personal",
-                )
-              : NavDrawer(
-                  currentPageId: "inventory-$uid",
+      return AdaptedScaffold(
+          title: inventoryTitle,
+          actions: [
+            IconButton(
+              iconSize: 30,
+              onPressed: () => {
+                showSearch(
+                  context: context,
+                  delegate: InventorySearchDelegate(
+                      invOwnRel: widget.invOwnRel,
+                      isPersonalInventory: isPersonalInventory),
                 ),
+              },
+              icon: const Icon(Icons.search_outlined),
+            ),
+          ],
+          currentPageId:
+              isPersonalInventory ? "inventory-personal" : "inventory-$uid",
           body: InventoryListView(
             invOwnRel: widget.invOwnRel,
             isPersonalInventory: isPersonalInventory,

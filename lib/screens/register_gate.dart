@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart' hide GoogleAuthProvider;
 import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
 import 'package:sfi_equipment_tracker/screens/auth_gate.dart';
 import 'package:sfi_equipment_tracker/screens/inventory_screen.dart';
-import 'package:sfi_equipment_tracker/screens/personal_inventory.dart';
 import 'package:sfi_equipment_tracker/providers/auth_provider.dart';
 
 class RegisterGate extends StatelessWidget {

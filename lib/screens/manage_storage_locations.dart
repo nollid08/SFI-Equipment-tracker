@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sfi_equipment_tracker/widgets/adapted_scaffold.dart';
 import 'package:sfi_equipment_tracker/widgets/add_new_equipment_form.dart';
 import 'package:sfi_equipment_tracker/widgets/create_inventory.dart';
 import 'package:sfi_equipment_tracker/widgets/restock_equipment_form.dart';
@@ -11,35 +12,24 @@ class ManageStorageLocations extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            'Manage Storage Locations',
-            style: TextStyle(
-              color: Colors.white,
+    return AdaptedScaffold(
+      title: 'Manage Storage Locations',
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          await showDialog(
+            context: context,
+            builder: (BuildContext context) => const AlertDialog(
+              content: CreateInventoryDialog(),
             ),
-          ),
-          centerTitle: true,
-          backgroundColor: SchoolFitnessBlue,
-          foregroundColor: Colors.white,
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            await showDialog(
-              context: context,
-              builder: (BuildContext context) => const AlertDialog(
-                content: CreateInventoryDialog(),
-              ),
-            );
-          },
-          backgroundColor: SchoolFitnessBlue,
-          child: const Icon(Icons.add),
-        ),
-        drawer: const NavDrawer(
-          currentPageId: "manage-storage-locations",
-        ),
-        body: const StorageLocationsListView(
-          searchCriteria: "",
-        ));
+          );
+        },
+        backgroundColor: SchoolFitnessBlue,
+        child: const Icon(Icons.add),
+      ),
+      body: const StorageLocationsListView(
+        searchCriteria: "",
+      ),
+      currentPageId: "manage-storage-locations",
+    );
   }
 }
