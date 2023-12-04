@@ -4,8 +4,8 @@ import 'package:sfi_equipment_tracker/widgets/restock_equipment_form.dart';
 import '../constants.dart';
 import '../widgets/nav_drawer.dart';
 
-class AddNewStock extends StatelessWidget {
-  const AddNewStock({super.key});
+class ManageStock extends StatelessWidget {
+  const ManageStock({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +14,7 @@ class AddNewStock extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: const Text(
-            'Add New Stock',
+            'Manage Stock',
             style: TextStyle(
               color: Colors.white,
             ),
@@ -39,7 +39,7 @@ class AddNewStock extends StatelessWidget {
           foregroundColor: Colors.white,
         ),
         drawer: const NavDrawer(
-          currentPageId: "add-new-stock",
+          currentPageId: "manage-stock",
         ),
         body: const TabBarView(
           children: [

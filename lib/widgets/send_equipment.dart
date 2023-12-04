@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:sfi_equipment_tracker/constants.dart';
-import 'package:sfi_equipment_tracker/providers/account_provider.dart';
 import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
 
 class SendEquipmentDialog extends StatefulWidget {
@@ -39,9 +38,9 @@ class _SendEquipmentDialogState extends State<SendEquipmentDialog> {
     _onChanged(val);
   }
 
-  void _onRecipientChanged(dynamic val) {
+  void _onRecipientChanged(InventoryOwnerRelationship val) {
     setState(() {
-      currentRecipient = val.name;
+      currentRecipient = val.owner.name;
     });
 
     _onChanged(val);
@@ -93,7 +92,7 @@ class _SendEquipmentDialogState extends State<SendEquipmentDialog> {
               FormBuilderDropdown(
                 name: "recipient",
                 items: items,
-                onChanged: (value) => _onRecipientChanged(value),
+                onChanged: (value) => _onRecipientChanged(value!),
                 validator: FormBuilderValidators.compose([
                   FormBuilderValidators.required(),
                 ]),
@@ -181,16 +180,13 @@ class TransferConfirmationText extends StatelessWidget {
                 fontWeight: FontWeight.bold, color: Colors.black),
           ),
           const TextSpan(
-            text: 'from ',
+            text: 'from my inventory to ',
             style: TextStyle(color: Colors.black),
           ),
-          const TextSpan(
-            text: "my inventory",
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-          ),
           TextSpan(
-            text: " to $inventoryOwnerFirstName's inventory",
-            style: const TextStyle(color: Colors.black),
+            text: "$inventoryOwnerFirstName's Inventory",
+            style: const TextStyle(
+                fontWeight: FontWeight.bold, color: Colors.black),
           ),
         ],
       ),

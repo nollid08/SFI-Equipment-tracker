@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sfi_equipment_tracker/constants.dart';
+import 'package:sfi_equipment_tracker/providers/account_provider.dart';
 import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
 import 'package:sfi_equipment_tracker/screens/auth_gate.dart';
 import 'package:sfi_equipment_tracker/widgets/inventory_list_view.dart';
@@ -22,14 +23,19 @@ class _InventoryScreenState extends State<InventoryScreen> {
     if (FirebaseAuth.instance.currentUser != null) {
       String currentUserUid = FirebaseAuth.instance.currentUser!.uid;
 
-      final String name = widget.invOwnRel.owner.name;
-      final String uid = widget.invOwnRel.owner.uid;
+      final InventoryOwnerRelationship invOwnRel = widget.invOwnRel;
+      final String name = invOwnRel.owner.name;
+      final String uid = invOwnRel.owner.uid;
       String inventoryTitle = "${name.split(' ').first}'s Inventory";
       bool isPersonalInventory = false;
+
       if (currentUserUid == uid) {
         inventoryTitle = "My Inventory";
         isPersonalInventory = true;
+      } else if (invOwnRel.owner.type == AccountType.storageLocation) {
+        inventoryTitle = name;
       }
+
       return Scaffold(
           appBar: AppBar(
             title: Text(

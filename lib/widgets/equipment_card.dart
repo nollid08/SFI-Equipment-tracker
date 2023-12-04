@@ -9,8 +9,8 @@ class EquipmentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Future<EquipmentUserRelationships> equipmentuserRelationships =
-        EquipmentUserRelationships.get(equipmentId);
+    final Future<GlobalEquipmentOwnerRelationships> equipmentuserRelationships =
+        GlobalEquipmentOwnerRelationships.get(equipmentId);
     return Card(
         child: SizedBox(
             width: double.infinity,
@@ -19,10 +19,10 @@ class EquipmentCard extends StatelessWidget {
                 future: equipmentuserRelationships,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    final EquipmentUserRelationships
+                    final GlobalEquipmentOwnerRelationships
                         equipmentUserRelationships =
-                        snapshot.data as EquipmentUserRelationships;
-                    final EquipmentItem equipment =
+                        snapshot.data as GlobalEquipmentOwnerRelationships;
+                    final GlobalEquipmentItem equipment =
                         equipmentUserRelationships.equipmentItem;
                     final Future<String> downloadUrlFuture = FirebaseStorage
                         .instance

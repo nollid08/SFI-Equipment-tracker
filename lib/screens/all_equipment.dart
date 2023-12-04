@@ -2,8 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sfi_equipment_tracker/constants.dart';
-import 'package:sfi_equipment_tracker/widgets/equipment_card.dart';
-import 'package:sfi_equipment_tracker/widgets/equipment_image.dart';
 import 'package:sfi_equipment_tracker/widgets/global_inventory_list_view.dart';
 import 'package:sfi_equipment_tracker/widgets/nav_drawer.dart';
 import 'package:sfi_equipment_tracker/widgets/search_delegates.dart';

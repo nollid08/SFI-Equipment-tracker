@@ -130,7 +130,7 @@ class SendButton extends StatelessWidget {
       child: const Text("Send"),
       onPressed: () async {
         print("Send Equipment");
-        final inventoryRefs = await InventoryOwnerRelationship.getAll();
+        final inventoryRefs = await InventoryOwnerRelationship.getAllUsers();
         if (context.mounted) {
           await showDialog(
             context: context,

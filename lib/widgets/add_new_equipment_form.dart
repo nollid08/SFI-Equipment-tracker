@@ -86,7 +86,7 @@ class _AddNewEquipmentFormState extends State<AddNewEquipmentForm> {
                       ]),
                     ),
                     FutureBuilder(
-                        future: InventoryOwnerRelationship.getAll(),
+                        future: InventoryOwnerRelationship.getAllUsers(),
                         builder: (BuildContext context,
                             AsyncSnapshot<List<InventoryOwnerRelationship>>
                                 snapshot) {
@@ -150,7 +150,8 @@ class _AddNewEquipmentFormState extends State<AddNewEquipmentForm> {
         final equipmentImage = data["equipment_image"][0];
         final InventoryOwnerRelationship recipientInventory = data["recipient"];
 
-        final bool hasEquipmentRegistered = await Equipment.registerEquipment(
+        final bool hasEquipmentRegistered =
+            await AllGlobalEquipment.registerEquipment(
           inventoryRef: recipientInventory.inventoryReference,
           name: equipmentName,
           quantity: equipmentQuantity,

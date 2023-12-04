@@ -84,17 +84,19 @@ class Inventory {
   }) async {
     // Get the count of the equipment in the originAccount's inventory
     final db = FirebaseFirestore.instance;
-    final originAccountRef = db.collection("users").doc(origineeUid);
-    final originInventoryRef = originAccountRef.collection("inventory");
-    final originEquipmentRef = originInventoryRef.doc(equipmentId);
+    final InventoryOwnerRelationship originInvOwnRel =
+        await InventoryOwnerRelationship.get(origineeUid);
+    final originEquipmentRef =
+        originInvOwnRel.inventoryReference.doc(equipmentId);
     final originEquipmentDoc = await originEquipmentRef.get();
     final originEquipmentData =
         originEquipmentDoc.data() as Map<String, dynamic>;
     final int originEquipmentCount = originEquipmentData["quantity"];
 
-    final recipientRef = db.collection("users").doc(recipientUid);
-    final recipientInventoryRef = recipientRef.collection("inventory");
-    final recipientEquipmentRef = recipientInventoryRef.doc(equipmentId);
+    final InventoryOwnerRelationship recipientInvOwnRel =
+        await InventoryOwnerRelationship.get(recipientUid);
+    final recipientEquipmentRef =
+        recipientInvOwnRel.inventoryReference.doc(equipmentId);
     final recipientEquipmentDoc = await recipientEquipmentRef.get();
     int recipientEquipmentCount = 0;
 
@@ -117,8 +119,31 @@ class Inventory {
       await recipientEquipmentRef.set({"quantity": newrecipientEquipmentCount});
     }
     // Get rid of equipment items with a count of 0!
-    cleanUpInventory(originInventoryRef);
-    cleanUpInventory(recipientInventoryRef);
+    cleanUpInventory(originInvOwnRel.inventoryReference);
+    cleanUpInventory(recipientInvOwnRel.inventoryReference);
+  }
+
+  static void addEquipmentItem({
+    required InventoryOwnerRelationship invOwnRel,
+    required String equipmentId,
+    required int quantity,
+  }) async {
+    final equipmentRef = invOwnRel.inventoryReference.doc(equipmentId);
+    final equipmentDoc = await equipmentRef.get();
+    int equipmentCount = 0;
+
+    // If the equipment is in the current users inventory, update the count of the equipment in the current users inventory
+    if (equipmentDoc.exists) {
+      final equipmentData = equipmentDoc.data() as Map<String, dynamic>;
+      equipmentCount = equipmentData["quantity"];
+    }
+
+    final int newEquipmentCount = equipmentCount + quantity;
+    if (equipmentDoc.exists) {
+      await equipmentRef.update({"quantity": newEquipmentCount});
+    } else {
+      await equipmentRef.set({"quantity": newEquipmentCount});
+    }
   }
 
   static void cleanUpInventory(
@@ -157,24 +182,75 @@ class InventoryOwnerRelationship {
 
   static Future<InventoryOwnerRelationship> get(String uid) async {
     final db = FirebaseFirestore.instance;
-    final Account owner = await Account.get(uid);
-    final CollectionReference<Map<String, dynamic>> reference =
-        db.collection("users").doc(owner.uid).collection("inventory");
-    final InventoryOwnerRelationship inventoryReference =
-        InventoryOwnerRelationship(
-      owner: owner,
-      inventoryReference: reference,
-    );
-
-    return inventoryReference;
+    //check if doc with uid is in users collection (if statement)
+    final DocumentSnapshot<Map<String, dynamic>> potentialUserRef =
+        await db.collection('users').doc(uid).get();
+    final DocumentSnapshot<Map<String, dynamic>> potentialStorageLocationRef =
+        await db.collection('storageLocations').doc(uid).get();
+    if (potentialUserRef.exists) {
+      final Account owner = await Account.get(uid);
+      final CollectionReference<Map<String, dynamic>> reference =
+          db.collection("users").doc(owner.uid).collection("inventory");
+      final InventoryOwnerRelationship inventoryReference =
+          InventoryOwnerRelationship(
+        owner: owner,
+        inventoryReference: reference,
+      );
+      return inventoryReference;
+    } else if (potentialStorageLocationRef.exists) {
+      final Account owner = await Account.get(uid);
+      final CollectionReference<Map<String, dynamic>> reference = db
+          .collection("storageLocations")
+          .doc(owner.uid)
+          .collection("inventory");
+      final InventoryOwnerRelationship inventoryReference =
+          InventoryOwnerRelationship(
+        owner: owner,
+        inventoryReference: reference,
+      );
+      return inventoryReference;
+    } else {
+      throw Exception("No user with uid $uid");
+    }
   }
 
   static Future<List<InventoryOwnerRelationship>> getAll() async {
+    //TODO: Implement getAll, currently only gets user and not slocs.
     final List<InventoryOwnerRelationship> inventoryRefs = [];
     final db = FirebaseFirestore.instance;
     final QuerySnapshot usersSnapshot = await db.collection("users").get();
     for (var userSnapshot in usersSnapshot.docs) {
       final String uid = userSnapshot.id;
+      final InventoryOwnerRelationship inventoryReference =
+          await InventoryOwnerRelationship.get(uid);
+      inventoryRefs.add(inventoryReference);
+    }
+
+    return inventoryRefs;
+  }
+
+  static Future<List<InventoryOwnerRelationship>> getAllUsers() async {
+    final List<InventoryOwnerRelationship> inventoryRefs = [];
+    final db = FirebaseFirestore.instance;
+    final QuerySnapshot usersSnapshot = await db.collection("users").get();
+    for (var userSnapshot in usersSnapshot.docs) {
+      final String uid = userSnapshot.id;
+      final InventoryOwnerRelationship inventoryReference =
+          await InventoryOwnerRelationship.get(uid);
+      inventoryRefs.add(inventoryReference);
+    }
+
+    return inventoryRefs;
+  }
+
+  static Future<List<InventoryOwnerRelationship>>
+      getAllStorageLocations() async {
+    final List<InventoryOwnerRelationship> inventoryRefs = [];
+    final db = FirebaseFirestore.instance;
+    final QuerySnapshot storageLocationsSnapshot =
+        await db.collection("storageLocations").get();
+    for (var storageLocationSnapshot in storageLocationsSnapshot.docs) {
+      final String uid = storageLocationSnapshot.id;
       final InventoryOwnerRelationship inventoryReference =
           await InventoryOwnerRelationship.get(uid);
       inventoryRefs.add(inventoryReference);

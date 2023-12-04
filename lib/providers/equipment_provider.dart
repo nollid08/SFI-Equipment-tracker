@@ -5,13 +5,13 @@ import 'package:sfi_equipment_tracker/providers/account_provider.dart';
 import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
 import 'package:sfi_equipment_tracker/providers/storage_provider.dart';
 
-class Equipment {
-  final List<EquipmentItem> equipmentList;
+class AllGlobalEquipment {
+  final List<GlobalEquipmentItem> equipmentList;
 
-  Equipment({required this.equipmentList});
+  AllGlobalEquipment({required this.equipmentList});
 
-  static Future<Equipment> get() async {
-    final List<EquipmentItem> equipmentList = [];
+  static Future<AllGlobalEquipment> get() async {
+    final List<GlobalEquipmentItem> equipmentList = [];
 
     final db = FirebaseFirestore.instance;
     final equipmentRef = db.collection("equipment");
@@ -31,7 +31,7 @@ class Equipment {
       // Get name and image
 
       equipmentList.add(
-        EquipmentItem(
+        GlobalEquipmentItem(
           id: id,
           name: name,
           totalQuantity: totalQuantity,
@@ -39,7 +39,7 @@ class Equipment {
         ),
       );
     }
-    return Equipment(equipmentList: equipmentList);
+    return AllGlobalEquipment(equipmentList: equipmentList);
   }
 
   static Future<bool> registerEquipment({
@@ -73,8 +73,7 @@ class Equipment {
         quantity: quantity,
         imageRef: uploadedImagePath,
       );
-      giveUserEquipment(
-          inventoryRef: inventoryRef, id: newEquipment.id, quantity: quantity);
+      inventoryRef.doc(equipmentId).set({"quantity": quantity});
 
       db.collection("equipment").doc(equipmentId).set({
         "name": newEquipment.name,
@@ -87,55 +86,53 @@ class Equipment {
     }
   }
 
-  static void updateEquipmentQuantity(
-      {required String equipmentId,
-      required int quantity,
-      required CollectionReference<Map<String, dynamic>> inventoryRef}) async {
+  static void updateTotalEquipmentQuantity({
+    required String equipmentId,
+    required int quantity,
+  }) async {
+    //Create DB Ref
     final FirebaseFirestore db = FirebaseFirestore.instance;
+    //Equipment Ref
     final DocumentReference<Map<String, dynamic>> equipmentRef =
         db.collection("equipment").doc(equipmentId);
+    //Get Equipment Data
     final DocumentSnapshot<Map<String, dynamic>> equipmentDocument =
         await equipmentRef.get();
     final Map<String, dynamic> equipmentData =
         equipmentDocument.data() as Map<String, dynamic>;
+    //Total Equipment Quantity
     final int totalQuantity = equipmentData["totalQuantity"];
+    //Amended Total Equipment Quantity
     final int newTotalQuantity = totalQuantity + quantity;
+    //Update Total Equipment Quantity
     equipmentRef.update({"totalQuantity": newTotalQuantity});
-    giveUserEquipment(
-        inventoryRef: inventoryRef, id: equipmentId, quantity: quantity);
-  }
-
-  static void giveUserEquipment(
-      {required CollectionReference<Map<String, dynamic>> inventoryRef,
-      required String id,
-      required int quantity}) {
-    inventoryRef.doc(id).set({"quantity": quantity});
   }
 }
 
-class EquipmentItem {
+class GlobalEquipmentItem {
   final String id;
   final String name;
   final int totalQuantity;
   final String imageRef;
 
-  EquipmentItem(
+  GlobalEquipmentItem(
       {required this.id,
       required this.name,
       required this.totalQuantity,
       required this.imageRef});
 }
 
-class EquipmentUserRelationships {
-  final EquipmentItem equipmentItem;
-  final List<EquipmentUserRelationship> relationships;
+class GlobalEquipmentOwnerRelationships {
+  final GlobalEquipmentItem equipmentItem;
+  final List<GlobalEquipmentUserRelationship> relationships;
 
-  EquipmentUserRelationships({
+  GlobalEquipmentOwnerRelationships({
     required this.equipmentItem,
     required this.relationships,
   });
 
-  static Future<EquipmentUserRelationships> get(String equipmentId) async {
+  static Future<GlobalEquipmentOwnerRelationships> get(
+      String equipmentId) async {
     final db = FirebaseFirestore.instance;
     final QuerySnapshot<Map<String, dynamic>> userSnapshot =
         await db.collection("users").get();
@@ -147,9 +144,9 @@ class EquipmentUserRelationships {
     final String name = equipmentData["name"];
     final String imageRef = equipmentData["imageRef"];
     final int totalQuantity = equipmentData["totalQuantity"];
-    final EquipmentUserRelationships equipmentUserRelationships =
-        EquipmentUserRelationships(
-      equipmentItem: EquipmentItem(
+    final GlobalEquipmentOwnerRelationships equipmentUserRelationships =
+        GlobalEquipmentOwnerRelationships(
+      equipmentItem: GlobalEquipmentItem(
         id: equipmentId,
         name: name,
         totalQuantity: totalQuantity,
@@ -169,8 +166,8 @@ class EquipmentUserRelationships {
         final String userName = user.name;
         final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
         final int quantity = data["quantity"];
-        final EquipmentUserRelationship equipmentUserRelationship =
-            EquipmentUserRelationship(
+        final GlobalEquipmentUserRelationship equipmentUserRelationship =
+            GlobalEquipmentUserRelationship(
           userId: userId,
           userName: userName,
           equipmentCount: quantity,
@@ -186,12 +183,12 @@ class EquipmentUserRelationships {
   }
 }
 
-class EquipmentUserRelationship {
+class GlobalEquipmentUserRelationship {
   final String userId;
   final String userName;
   final int equipmentCount;
 
-  EquipmentUserRelationship({
+  GlobalEquipmentUserRelationship({
     required this.userId,
     required this.userName,
     required this.equipmentCount,

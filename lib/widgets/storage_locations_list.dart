@@ -4,9 +4,9 @@ import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
 import 'package:sfi_equipment_tracker/screens/auth_gate.dart';
 import 'package:sfi_equipment_tracker/screens/inventory_screen.dart';
 
-class InventoriesList extends StatelessWidget {
+class StorageLocationsList extends StatelessWidget {
   final String currentPageId;
-  const InventoriesList({
+  const StorageLocationsList({
     super.key,
     required this.currentPageId,
   });
@@ -16,14 +16,14 @@ class InventoriesList extends StatelessWidget {
     return Column(
       children: [
         Text(
-          'Coach Inventories',
+          'Storage Locations',
           style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.blue.shade900,
               fontSize: 18),
         ),
         FutureBuilder(
-            future: InventoryOwnerRelationship.getAllUsers(),
+            future: InventoryOwnerRelationship.getAllStorageLocations(),
             builder: (context,
                 AsyncSnapshot<List<InventoryOwnerRelationship>> snapshot) {
               if (snapshot.hasData) {
@@ -36,11 +36,9 @@ class InventoriesList extends StatelessWidget {
                   invOwnRels.forEach((invOwnRel) {
                     if (invOwnRel.owner.uid != currentUserUid) {
                       final String name = invOwnRel.owner.name;
-                      final String listTileTitle = "$name's Inventory";
 
-                      print(listTileTitle);
                       final listTile = ListTile(
-                          title: Text(listTileTitle),
+                          title: Text(name),
                           selected: currentPageId ==
                               'inventory-${invOwnRel.owner.uid}',
                           onTap: () {

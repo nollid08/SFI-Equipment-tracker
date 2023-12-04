@@ -38,9 +38,9 @@ class _RestockEquipmentFormState extends State<RestockEquipmentForm> {
                 child: Column(
                   children: <Widget>[
                     FutureBuilder(
-                        future: Equipment.get(),
+                        future: AllGlobalEquipment.get(),
                         builder: (BuildContext context,
-                            AsyncSnapshot<Equipment> snapshot) {
+                            AsyncSnapshot<AllGlobalEquipment> snapshot) {
                           switch (snapshot.connectionState) {
                             case ConnectionState.none:
                               return const CircularProgressIndicator();
@@ -50,7 +50,7 @@ class _RestockEquipmentFormState extends State<RestockEquipmentForm> {
                               if (snapshot.hasError) {
                                 return Text('Error: ${snapshot.error}');
                               } else {
-                                final List<EquipmentItem>? inventoryRefs =
+                                final List<GlobalEquipmentItem>? inventoryRefs =
                                     snapshot.data?.equipmentList;
                                 if (inventoryRefs != null) {
                                   return FormBuilderDropdown(
@@ -90,7 +90,7 @@ class _RestockEquipmentFormState extends State<RestockEquipmentForm> {
                       ),
                     ),
                     FutureBuilder(
-                        future: InventoryOwnerRelationship.getAll(),
+                        future: InventoryOwnerRelationship.getAllUsers(),
                         builder: (BuildContext context,
                             AsyncSnapshot<List<InventoryOwnerRelationship>>
                                 snapshot) {
@@ -149,13 +149,17 @@ class _RestockEquipmentFormState extends State<RestockEquipmentForm> {
       // Check to make sure user is signed in
       if (user != null) {
         final Map data = _formKey.currentState!.value;
-        final EquipmentItem equipment = data["equipment"];
+        final GlobalEquipmentItem equipment = data["equipment"];
         final int equipmentQuantity = data["equipment_quantity"].toInt();
         final InventoryOwnerRelationship recipientInventory = data["recipient"];
-        Equipment.updateEquipmentQuantity(
+        AllGlobalEquipment.updateTotalEquipmentQuantity(
+          equipmentId: equipment.id,
+          quantity: equipmentQuantity,
+        );
+        Inventory.addEquipmentItem(
             equipmentId: equipment.id,
             quantity: equipmentQuantity,
-            inventoryRef: recipientInventory.inventoryReference);
+            invOwnRel: recipientInventory);
       } else {
         Navigator.pushReplacement(
           context,
