@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sfi_equipment_tracker/providers/account_provider.dart';
 import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
+import 'package:sfi_equipment_tracker/screens/manage_admins.dart';
 import 'package:sfi_equipment_tracker/screens/manage_stock.dart';
 import 'package:sfi_equipment_tracker/screens/all_equipment.dart';
 import 'package:sfi_equipment_tracker/screens/auth_gate.dart';
@@ -47,7 +48,7 @@ class NavDrawer extends StatelessWidget {
                 final InventoryOwnerRelationship inventoryRef =
                     await InventoryOwnerRelationship.get(currentUserUid);
                 if (context.mounted) {
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                       builder: (context) => InventoryScreen(
@@ -71,7 +72,7 @@ class NavDrawer extends StatelessWidget {
             selected: currentPageId == 'global-inventory',
             onTap: () {
               Navigator.pop(context);
-              Navigator.push(
+              Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => const AllEquipment()),
               );
@@ -134,7 +135,7 @@ class AdminNavigationArea extends StatelessWidget {
                     selected: currentPageId == 'manage-stock',
                     onTap: () {
                       Navigator.pop(context);
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                             builder: (context) => const ManageStock()),
@@ -148,10 +149,25 @@ class AdminNavigationArea extends StatelessWidget {
                     selected: currentPageId == 'manage-storage-locations',
                     onTap: () {
                       Navigator.pop(context);
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                           builder: (context) => const ManageStorageLocations(),
+                        ),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    title: const Text(
+                      'Manage Admins',
+                    ),
+                    selected: currentPageId == 'manage-admins',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ManageAdmins(),
                         ),
                       );
                     },

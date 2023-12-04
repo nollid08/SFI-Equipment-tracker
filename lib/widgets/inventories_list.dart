@@ -23,7 +23,7 @@ class InventoriesList extends StatelessWidget {
               fontSize: 18),
         ),
         FutureBuilder(
-            future: InventoryOwnerRelationship.getAllUsers(),
+            future: InventoryOwnerRelationship.getAllUserInvOwnRels(),
             builder: (context,
                 AsyncSnapshot<List<InventoryOwnerRelationship>> snapshot) {
               if (snapshot.hasData) {
@@ -45,7 +45,7 @@ class InventoriesList extends StatelessWidget {
                               'inventory-${invOwnRel.owner.uid}',
                           onTap: () {
                             Navigator.pop(context);
-                            Navigator.push(
+                            Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => InventoryScreen(

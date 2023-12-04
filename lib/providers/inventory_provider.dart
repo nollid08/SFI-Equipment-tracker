@@ -214,8 +214,7 @@ class InventoryOwnerRelationship {
     }
   }
 
-  static Future<List<InventoryOwnerRelationship>> getAll() async {
-    //TODO: Implement getAll, currently only gets user and not slocs.
+  static Future<List<InventoryOwnerRelationship>> getAllUserInvOwnRels() async {
     final List<InventoryOwnerRelationship> inventoryRefs = [];
     final db = FirebaseFirestore.instance;
     final QuerySnapshot usersSnapshot = await db.collection("users").get();
@@ -229,12 +228,20 @@ class InventoryOwnerRelationship {
     return inventoryRefs;
   }
 
-  static Future<List<InventoryOwnerRelationship>> getAllUsers() async {
+  static Future<List<InventoryOwnerRelationship>> getAllInvOwnRels() async {
     final List<InventoryOwnerRelationship> inventoryRefs = [];
     final db = FirebaseFirestore.instance;
     final QuerySnapshot usersSnapshot = await db.collection("users").get();
     for (var userSnapshot in usersSnapshot.docs) {
       final String uid = userSnapshot.id;
+      final InventoryOwnerRelationship inventoryReference =
+          await InventoryOwnerRelationship.get(uid);
+      inventoryRefs.add(inventoryReference);
+    }
+    final QuerySnapshot storageLocationsSnapshot =
+        await db.collection("storageLocations").get();
+    for (var storageLocationSnapshot in storageLocationsSnapshot.docs) {
+      final String uid = storageLocationSnapshot.id;
       final InventoryOwnerRelationship inventoryReference =
           await InventoryOwnerRelationship.get(uid);
       inventoryRefs.add(inventoryReference);

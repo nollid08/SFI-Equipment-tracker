@@ -43,7 +43,7 @@ class StorageLocationsList extends StatelessWidget {
                               'inventory-${invOwnRel.owner.uid}',
                           onTap: () {
                             Navigator.pop(context);
-                            Navigator.push(
+                            Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => InventoryScreen(

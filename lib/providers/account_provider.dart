@@ -83,4 +83,20 @@ class Account {
       return Account(name: "", uid: "", type: AccountType.coach);
     }
   }
+
+  static Future<bool> setAdminStatus({
+    required String uid,
+    required bool isAdmin,
+  }) async {
+    final FirebaseFirestore db = FirebaseFirestore.instance;
+    final DocumentReference<Map<String, dynamic>> userRef =
+        db.collection('users').doc(uid);
+    try {
+      await userRef.update({'isAdmin': isAdmin});
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
 }

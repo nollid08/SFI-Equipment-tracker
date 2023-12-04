@@ -86,7 +86,7 @@ class _AddNewEquipmentFormState extends State<AddNewEquipmentForm> {
                       ]),
                     ),
                     FutureBuilder(
-                        future: InventoryOwnerRelationship.getAllUsers(),
+                        future: InventoryOwnerRelationship.getAllInvOwnRels(),
                         builder: (BuildContext context,
                             AsyncSnapshot<List<InventoryOwnerRelationship>>
                                 snapshot) {
