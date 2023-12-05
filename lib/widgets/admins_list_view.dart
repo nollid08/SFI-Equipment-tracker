@@ -34,7 +34,14 @@ class _AdminsListViewState extends State<AdminsListView> {
 
         if (snapshot.connectionState == ConnectionState.waiting) {
           //If the connection is waiting, return a circular progress indicator
-          return const Center(child: CircularProgressIndicator());
+          return const Center(
+            child: Center(
+              child: SizedBox.square(
+                dimension: 100,
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          );
         }
 
         void toggleAdmin(String uid, bool isAdmin) async {

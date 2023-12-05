@@ -42,7 +42,6 @@ class StorageLocationsList extends StatelessWidget {
                           selected: currentPageId ==
                               'inventory-${invOwnRel.owner.uid}',
                           onTap: () {
-                            Navigator.pop(context);
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
@@ -66,16 +65,23 @@ class StorageLocationsList extends StatelessWidget {
                       builder: (BuildContext context) => const AuthGate(),
                     ),
                   );
-                  return const CircularProgressIndicator();
+                  return const Center(
+                    child: SizedBox.square(
+                      dimension: 100,
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                  ;
                 }
               } else if (snapshot.hasError) {
                 return const Text('Something went wrong');
               } else {
                 return const Center(
-                    child: Padding(
-                  padding: EdgeInsets.all(18.0),
-                  child: CircularProgressIndicator(),
-                ));
+                  child: SizedBox.square(
+                    dimension: 100,
+                    child: CircularProgressIndicator(),
+                  ),
+                );
               }
             }),
       ],

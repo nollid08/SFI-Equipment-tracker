@@ -56,7 +56,10 @@ class RegisterGate extends StatelessWidget {
                       return const Text("No data");
                     } else {
                       return const Center(
-                        child: CircularProgressIndicator(),
+                        child: SizedBox.square(
+                          dimension: 100,
+                          child: CircularProgressIndicator(),
+                        ),
                       );
                     }
                   });
@@ -75,7 +78,13 @@ class RegisterGate extends StatelessWidget {
           } else if (snapshot.connectionState == ConnectionState.none) {
             return const Text("No data");
           }
-          return const Center(child: CircularProgressIndicator());
+          return const Center(
+              child: Center(
+            child: SizedBox.square(
+              dimension: 100,
+              child: CircularProgressIndicator(),
+            ),
+          ));
         },
       ),
     );

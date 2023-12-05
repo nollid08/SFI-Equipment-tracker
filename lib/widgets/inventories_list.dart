@@ -44,7 +44,6 @@ class InventoriesList extends StatelessWidget {
                           selected: currentPageId ==
                               'inventory-${invOwnRel.owner.uid}',
                           onTap: () {
-                            Navigator.pop(context);
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
@@ -74,10 +73,11 @@ class InventoriesList extends StatelessWidget {
                 return const Text('Something went wrong');
               } else {
                 return const Center(
-                    child: Padding(
-                  padding: EdgeInsets.all(18.0),
-                  child: CircularProgressIndicator(),
-                ));
+                  child: SizedBox.square(
+                    dimension: 100,
+                    child: CircularProgressIndicator(),
+                  ),
+                );
               }
             }),
       ],

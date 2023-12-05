@@ -71,7 +71,6 @@ class NavDrawer extends StatelessWidget {
             title: const Text('All Equipment'),
             selected: currentPageId == 'global-inventory',
             onTap: () {
-              Navigator.pop(context);
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => const AllEquipment()),
@@ -134,7 +133,6 @@ class AdminNavigationArea extends StatelessWidget {
                     ),
                     selected: currentPageId == 'manage-stock',
                     onTap: () {
-                      Navigator.pop(context);
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
@@ -148,7 +146,6 @@ class AdminNavigationArea extends StatelessWidget {
                     ),
                     selected: currentPageId == 'manage-storage-locations',
                     onTap: () {
-                      Navigator.pop(context);
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
@@ -163,7 +160,6 @@ class AdminNavigationArea extends StatelessWidget {
                     ),
                     selected: currentPageId == 'manage-admins',
                     onTap: () {
-                      Navigator.pop(context);
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
@@ -180,7 +176,13 @@ class AdminNavigationArea extends StatelessWidget {
           } else if (snapshot.hasError) {
             return const Text('Error 5407');
           } else {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+                child: Center(
+              child: SizedBox.square(
+                dimension: 100,
+                child: CircularProgressIndicator(),
+              ),
+            ));
           }
         });
   }

@@ -71,7 +71,12 @@ class InventoryListView extends StatelessWidget {
               } else if (snapshot.hasError) {
                 return const Text("error 4049");
               } else {
-                return const CircularProgressIndicator();
+                return const Center(
+                  child: SizedBox.square(
+                    dimension: 100,
+                    child: CircularProgressIndicator(),
+                  ),
+                );
               }
             },
           );

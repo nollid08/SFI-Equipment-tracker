@@ -68,7 +68,12 @@ class _InventoryScreenState extends State<InventoryScreen> {
           builder: (BuildContext context) => const AuthGate(),
         ),
       );
-      return const CircularProgressIndicator();
+      return const Center(
+        child: SizedBox.square(
+          dimension: 100,
+          child: CircularProgressIndicator(),
+        ),
+      );
     }
   }
 }

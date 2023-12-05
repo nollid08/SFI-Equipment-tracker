@@ -12,105 +12,119 @@ class EquipmentCard extends StatelessWidget {
     final Future<GlobalEquipmentOwnerRelationships> equipmentuserRelationships =
         GlobalEquipmentOwnerRelationships.get(equipmentId);
     return Card(
-        child: SizedBox(
-            width: double.infinity,
-            height: 400,
-            child: FutureBuilder<Object>(
-                future: equipmentuserRelationships,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    final GlobalEquipmentOwnerRelationships
-                        equipmentUserRelationships =
-                        snapshot.data as GlobalEquipmentOwnerRelationships;
-                    final GlobalEquipmentItem equipment =
-                        equipmentUserRelationships.equipmentItem;
-                    final Future<String> downloadUrlFuture = FirebaseStorage
-                        .instance
-                        .ref()
-                        .child(equipment.imageRef)
-                        .getDownloadURL();
-                    return Column(
-                      mainAxisSize: MainAxisSize.max,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        FutureBuilder(
-                            future: downloadUrlFuture,
-                            builder:
-                                (BuildContext context, AsyncSnapshot imageUrl) {
-                              if (imageUrl.hasData) {
-                                return SizedBox(
-                                  height: 100,
-                                  width: double.infinity,
-                                  child: Image.network(
-                                    imageUrl.data,
-                                    fit: BoxFit.cover,
-                                    height: 100,
+      child: SizedBox(
+        width: double.infinity,
+        height: 400,
+        child: FutureBuilder<Object>(
+            future: equipmentuserRelationships,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                final GlobalEquipmentOwnerRelationships
+                    equipmentUserRelationships =
+                    snapshot.data as GlobalEquipmentOwnerRelationships;
+                final GlobalEquipmentItem equipment =
+                    equipmentUserRelationships.equipmentItem;
+                final Future<String> downloadUrlFuture = FirebaseStorage
+                    .instance
+                    .ref()
+                    .child(equipment.imageRef)
+                    .getDownloadURL();
+                return Column(
+                  mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    FutureBuilder(
+                        future: downloadUrlFuture,
+                        builder:
+                            (BuildContext context, AsyncSnapshot imageUrl) {
+                          if (imageUrl.hasData) {
+                            return SizedBox(
+                              height: 100,
+                              width: double.infinity,
+                              child: Image.network(
+                                imageUrl.data,
+                                fit: BoxFit.cover,
+                                height: 100,
+                              ),
+                            );
+                          } else {
+                            return const Center(
+                              child: SizedBox.square(
+                                dimension: 100,
+                                child: CircularProgressIndicator(),
+                              ),
+                            );
+                            ;
+                          }
+                        }),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          Text(
+                            equipment.name,
+                            style: const TextStyle(
+                              fontSize: 40,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                          Text(
+                            "Total Quantity: ${equipment.totalQuantity}",
+                            style: const TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          ListView.separated(
+                              separatorBuilder:
+                                  (BuildContext context, int index) {
+                                return const Divider();
+                              },
+                              itemCount: equipmentUserRelationships
+                                  .relationships.length,
+                              scrollDirection: Axis.vertical,
+                              shrinkWrap: true,
+                              itemBuilder: (BuildContext context, int index) {
+                                return ListTile(
+                                  title: Text(
+                                    equipmentUserRelationships
+                                        .relationships[index].userName,
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    "Quantity: ${equipmentUserRelationships.relationships[index].equipmentCount}",
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
                                 );
-                              } else {
-                                return const CircularProgressIndicator();
-                              }
-                            }),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            children: [
-                              Text(
-                                equipment.name,
-                                style: const TextStyle(
-                                  fontSize: 40,
-                                  fontWeight: FontWeight.w900,
-                                ),
-                              ),
-                              Text(
-                                "Total Quantity: ${equipment.totalQuantity}",
-                                style: const TextStyle(
-                                  fontSize: 25,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              ListView.separated(
-                                  separatorBuilder:
-                                      (BuildContext context, int index) {
-                                    return const Divider();
-                                  },
-                                  itemCount: equipmentUserRelationships
-                                      .relationships.length,
-                                  scrollDirection: Axis.vertical,
-                                  shrinkWrap: true,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    return ListTile(
-                                      title: Text(
-                                        equipmentUserRelationships
-                                            .relationships[index].userName,
-                                        style: const TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                      subtitle: Text(
-                                        "Quantity: ${equipmentUserRelationships.relationships[index].equipmentCount}",
-                                        style: const TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    );
-                                  })
-                            ],
-                          ),
-                        ),
-                      ],
-                    );
-                  } else if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  } else {
-                    return const Center(
+                              })
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                return const Center(
+                  child: SizedBox.square(
+                    dimension: 40,
+                    child: Center(
                       child: SizedBox.square(
-                          dimension: 40, child: CircularProgressIndicator()),
-                    );
-                  }
-                })));
+                        dimension: 100,
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+                  ),
+                );
+              }
+            }),
+      ),
+    );
   }
 }

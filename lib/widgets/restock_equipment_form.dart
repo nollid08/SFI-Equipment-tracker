@@ -43,9 +43,14 @@ class _RestockEquipmentFormState extends State<RestockEquipmentForm> {
                             AsyncSnapshot<AllGlobalEquipment> snapshot) {
                           switch (snapshot.connectionState) {
                             case ConnectionState.none:
-                              return const CircularProgressIndicator();
+                              return const Text('Error 8754');
                             case ConnectionState.waiting:
-                              return const CircularProgressIndicator();
+                              return const Center(
+                                child: SizedBox.square(
+                                  dimension: 100,
+                                  child: CircularProgressIndicator(),
+                                ),
+                              );
                             default:
                               if (snapshot.hasError) {
                                 return Text('Error: ${snapshot.error}');
@@ -96,9 +101,14 @@ class _RestockEquipmentFormState extends State<RestockEquipmentForm> {
                                 snapshot) {
                           switch (snapshot.connectionState) {
                             case ConnectionState.none:
-                              return const CircularProgressIndicator();
+                              return const Text('error 6901');
                             case ConnectionState.waiting:
-                              return const CircularProgressIndicator();
+                              return const Center(
+                                child: SizedBox.square(
+                                  dimension: 100,
+                                  child: CircularProgressIndicator(),
+                                ),
+                              );
                             default:
                               if (snapshot.hasError) {
                                 return Text('Error: ${snapshot.error}');

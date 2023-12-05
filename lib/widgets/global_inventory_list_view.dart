@@ -35,7 +35,13 @@ class _GlobalInventoryListViewState extends State<GlobalInventoryListView> {
 
         if (snapshot.connectionState == ConnectionState.waiting) {
           //If the connection is waiting, return a circular progress indicator
-          return const Center(child: CircularProgressIndicator());
+          return const Center(
+              child: Center(
+            child: SizedBox.square(
+              dimension: 100,
+              child: CircularProgressIndicator(),
+            ),
+          ));
         }
 
         return ListView(

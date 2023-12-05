@@ -92,9 +92,19 @@ class _AddNewEquipmentFormState extends State<AddNewEquipmentForm> {
                                 snapshot) {
                           switch (snapshot.connectionState) {
                             case ConnectionState.none:
-                              return const CircularProgressIndicator();
+                              return const Center(
+                                child: SizedBox.square(
+                                  dimension: 100,
+                                  child: CircularProgressIndicator(),
+                                ),
+                              );
                             case ConnectionState.waiting:
-                              return const CircularProgressIndicator();
+                              return const Center(
+                                child: SizedBox.square(
+                                  dimension: 100,
+                                  child: CircularProgressIndicator(),
+                                ),
+                              );
                             default:
                               if (snapshot.hasError) {
                                 return Text('Error: ${snapshot.error}');

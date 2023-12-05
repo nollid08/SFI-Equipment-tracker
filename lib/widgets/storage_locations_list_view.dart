@@ -3,9 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
 import 'package:sfi_equipment_tracker/providers/storage_location_provider.dart';
 import 'package:sfi_equipment_tracker/screens/inventory_screen.dart';
-import 'package:sfi_equipment_tracker/widgets/equipment_card.dart';
-import 'package:sfi_equipment_tracker/widgets/equipment_image.dart';
-import 'package:sfi_equipment_tracker/widgets/inventory_list_view.dart';
 
 class StorageLocationsListView extends StatefulWidget {
   final String searchCriteria;
@@ -36,8 +33,12 @@ class _StorageLocationsListViewState extends State<StorageLocationsListView> {
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
-          //If the connection is waiting, return a circular progress indicator
-          return const Center(child: CircularProgressIndicator());
+          return const Center(
+            child: SizedBox.square(
+              dimension: 100,
+              child: CircularProgressIndicator(),
+            ),
+          );
         }
         void delete(String id) async {
           bool documentDeleted = await StorageLocationProvider.delete(id);

@@ -18,8 +18,12 @@ class AdaptedScaffold extends StatelessWidget {
   final Widget body;
   final Widget? floatingActionButton;
   final PreferredSizeWidget? bottom;
+
   @override
   Widget build(BuildContext context) {
+    double deviceWidth = MediaQuery.of(context).size.shortestSide;
+    print(deviceWidth);
+    bool isPortrait = deviceWidth <= FormFactor.portrait;
     return Scaffold(
       appBar: AppBar(
           title: Text(
@@ -33,8 +37,17 @@ class AdaptedScaffold extends StatelessWidget {
           backgroundColor: SchoolFitnessBlue,
           foregroundColor: Colors.white,
           actions: actions),
-      drawer: NavDrawer(currentPageId: currentPageId),
-      body: body,
+      drawer: isPortrait ? NavDrawer(currentPageId: currentPageId) : null,
+      body: isPortrait
+          ? body
+          : Row(
+              children: [
+                NavDrawer(currentPageId: currentPageId),
+                Expanded(
+                  child: body,
+                ),
+              ],
+            ),
     );
   }
 }

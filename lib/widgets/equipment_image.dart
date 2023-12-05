@@ -12,14 +12,24 @@ class EquipmentImage extends StatelessWidget {
   Widget build(BuildContext context) {
     final Future<String> downloadURL =
         FirebaseStorage.instance.ref().child(imageRef).getDownloadURL();
-    return FutureBuilder(
-        future: downloadURL,
-        builder: (BuildContext context, AsyncSnapshot imageUrl) {
-          if (imageUrl.hasData) {
-            return Image.network(imageUrl.data);
-          } else {
-            return const CircularProgressIndicator();
-          }
-        });
+    return SizedBox(
+      width: 50,
+      child: FutureBuilder(
+          future: downloadURL,
+          builder: (BuildContext context, AsyncSnapshot imageUrl) {
+            if (imageUrl.hasData) {
+              return SizedBox.square(
+                  child: Image.network(
+                imageUrl.data,
+                fit: BoxFit.cover,
+                width: 50,
+              ));
+            } else {
+              return const Center(
+                  child: SizedBox.square(
+                      dimension: 50, child: CircularProgressIndicator()));
+            }
+          }),
+    );
   }
 }
