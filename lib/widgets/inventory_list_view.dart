@@ -22,69 +22,86 @@ class InventoryListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // final CollectionReference inventoryReference = invOwnRel.inventoryReference;
+    print(invOwnRel);
+    final FirebaseFirestore db = FirebaseFirestore.instance;
+    final inventoryReference =
+        db.collection("users").doc(invOwnRel.owner.uid).collection("inventory");
+
+    final Stream<QuerySnapshot<Map<String, dynamic>>> snapshots =
+        inventoryReference.snapshots();
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-      stream: invOwnRel.inventoryReference.snapshots(),
+      stream: snapshots,
       builder: (
         BuildContext context,
         AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot,
       ) {
-        if (snapshot.hasData) {
-          final QuerySnapshot<Map<String, dynamic>> inventorySnapshot =
-              snapshot.data!;
-          return FutureBuilder(
-            future: Inventory.getFromSnapshot(inventorySnapshot),
-            builder: (BuildContext context, AsyncSnapshot<Inventory> snapshot) {
-              if (snapshot.hasData) {
-                final Inventory inventory = snapshot.data!;
-                return ListView.separated(
-                  itemCount: inventory.inventory.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    final InventoryItem item = inventory.inventory[index];
-                    if (item.name.toLowerCase().contains(searchCriteria)) {
-                      return ListTile(
-                        leading: EquipmentImage(imageRef: item.imageRef),
-                        title: Text(item.name),
-                        subtitle: Text(item.quantity.toString()),
-                        trailing: isPersonalInventory
-                            ? SendButton(
-                                inventoryOwner: invOwnRel.owner,
-                                item: item,
-                              )
-                            : ClaimButton(
-                                inventoryOwner: invOwnRel.owner,
-                                item: item,
-                              ),
-                      );
-                    } else {
-                      return const SizedBox.shrink();
-                    }
-                  },
-                  separatorBuilder: (context, index) {
-                    final InventoryItem item = inventory.inventory[index];
-                    if (item.name.toLowerCase().contains(searchCriteria)) {
-                      return const Divider();
-                    } else {
-                      return const SizedBox.shrink();
-                    }
-                  },
-                );
-              } else if (snapshot.hasError) {
-                return const Text("error 4049");
-              } else {
-                return const Center(
-                  child: SizedBox.square(
-                    dimension: 100,
-                    child: CircularProgressIndicator(),
-                  ),
-                );
-              }
-            },
-          );
-        } else if (snapshot.hasError) {
+        if (snapshot.hasError) {
+          //If there is an error, return a Text widget with the error
           return const Text('Something went wrong');
-        } else {
-          return const Text("Loading");
         }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          //If the connection is waiting, return a circular progress indicator
+          return const Center(
+              child: Center(
+            child: SizedBox.square(
+              dimension: 400,
+              child: CircularProgressIndicator(),
+            ),
+          ));
+        }
+        final QuerySnapshot<Map<String, dynamic>> inventorySnapshot =
+            snapshot.data!;
+        return FutureBuilder(
+          future: Inventory.getFromSnapshot(inventorySnapshot),
+          builder: (BuildContext context, AsyncSnapshot<Inventory> snapshot) {
+            if (snapshot.hasData) {
+              final Inventory inventory = snapshot.data!;
+              return ListView.separated(
+                itemCount: inventory.inventory.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final InventoryItem item = inventory.inventory[index];
+                  if (item.name.toLowerCase().contains(searchCriteria)) {
+                    return ListTile(
+                      leading: EquipmentImage(imageRef: item.imageRef),
+                      title: Text(item.name),
+                      subtitle: Text(item.quantity.toString()),
+                      trailing: isPersonalInventory
+                          ? SendButton(
+                              inventoryOwner: invOwnRel.owner,
+                              item: item,
+                            )
+                          : ClaimButton(
+                              inventoryOwner: invOwnRel.owner,
+                              item: item,
+                            ),
+                    );
+                  } else {
+                    return const SizedBox.shrink();
+                  }
+                },
+                separatorBuilder: (context, index) {
+                  final InventoryItem item = inventory.inventory[index];
+                  if (item.name.toLowerCase().contains(searchCriteria)) {
+                    return const Divider();
+                  } else {
+                    return const SizedBox.shrink();
+                  }
+                },
+              );
+            } else if (snapshot.hasError) {
+              return const Text("error 4049");
+            } else {
+              return const Center(
+                child: SizedBox.square(
+                  dimension: 100,
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+          },
+        );
       },
     );
   }

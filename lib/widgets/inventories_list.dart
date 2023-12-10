@@ -23,7 +23,7 @@ class InventoriesList extends StatelessWidget {
               fontSize: 18),
         ),
         FutureBuilder(
-            future: InventoryOwnerRelationship.getAllUserInvOwnRels(),
+            future: InventoryOwnerRelationship.getAllCoachInvOwnRels(),
             builder: (context,
                 AsyncSnapshot<List<InventoryOwnerRelationship>> snapshot) {
               if (snapshot.hasData) {

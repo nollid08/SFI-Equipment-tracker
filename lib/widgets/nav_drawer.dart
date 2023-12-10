@@ -11,7 +11,7 @@ import 'package:sfi_equipment_tracker/screens/manage_storage_locations.dart';
 import 'package:sfi_equipment_tracker/widgets/inventories_list.dart';
 import 'package:sfi_equipment_tracker/widgets/storage_locations_list.dart';
 
-class NavDrawer extends StatelessWidget {
+class NavDrawer extends StatefulWidget {
   final String currentPageId;
 
   const NavDrawer({
@@ -19,6 +19,11 @@ class NavDrawer extends StatelessWidget {
     required this.currentPageId,
   });
 
+  @override
+  State<NavDrawer> createState() => _NavDrawerState();
+}
+
+class _NavDrawerState extends State<NavDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -41,7 +46,7 @@ class NavDrawer extends StatelessWidget {
           ),
           ListTile(
             title: const Text('My Inventory'),
-            selected: currentPageId == 'inventory-personal',
+            selected: widget.currentPageId == 'inventory-personal',
             onTap: () async {
               if (FirebaseAuth.instance.currentUser != null) {
                 String currentUserUid = FirebaseAuth.instance.currentUser!.uid;
@@ -69,7 +74,7 @@ class NavDrawer extends StatelessWidget {
           ),
           ListTile(
             title: const Text('All Equipment'),
-            selected: currentPageId == 'global-inventory',
+            selected: widget.currentPageId == 'global-inventory',
             onTap: () {
               Navigator.pushReplacement(
                 context,
@@ -78,13 +83,13 @@ class NavDrawer extends StatelessWidget {
             },
           ),
           InventoriesList(
-            currentPageId: currentPageId,
+            currentPageId: widget.currentPageId,
           ),
           StorageLocationsList(
-            currentPageId: currentPageId,
+            currentPageId: widget.currentPageId,
           ),
           AdminNavigationArea(
-            currentPageId: currentPageId,
+            currentPageId: widget.currentPageId,
           ),
         ],
       ),

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:sfi_equipment_tracker/providers/account_provider.dart';
 
 class Inventory {
@@ -214,7 +215,8 @@ class InventoryOwnerRelationship {
     }
   }
 
-  static Future<List<InventoryOwnerRelationship>> getAllUserInvOwnRels() async {
+  static Future<List<InventoryOwnerRelationship>>
+      getAllCoachInvOwnRels() async {
     final List<InventoryOwnerRelationship> inventoryRefs = [];
     final db = FirebaseFirestore.instance;
     final QuerySnapshot usersSnapshot = await db.collection("users").get();

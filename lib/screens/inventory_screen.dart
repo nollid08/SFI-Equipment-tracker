@@ -46,7 +46,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                 showSearch(
                   context: context,
                   delegate: InventorySearchDelegate(
-                      invOwnRel: widget.invOwnRel,
+                      invOwnRel: invOwnRel,
                       isPersonalInventory: isPersonalInventory),
                 ),
               },
