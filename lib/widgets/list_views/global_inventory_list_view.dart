@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:sfi_equipment_tracker/widgets/equipment_card.dart';
-import 'package:sfi_equipment_tracker/widgets/equipment_image.dart';
+import 'package:sfi_equipment_tracker/widgets/list_views/equipment_card.dart';
+import 'package:sfi_equipment_tracker/widgets/list_views/equipment_image.dart';
 
 class GlobalInventoryListView extends StatefulWidget {
   final String uid;

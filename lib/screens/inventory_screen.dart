@@ -5,8 +5,8 @@ import 'package:sfi_equipment_tracker/providers/account_provider.dart';
 import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
 import 'package:sfi_equipment_tracker/screens/auth_gate.dart';
 import 'package:sfi_equipment_tracker/widgets/adapted_scaffold.dart';
-import 'package:sfi_equipment_tracker/widgets/inventory_list_view.dart';
-import 'package:sfi_equipment_tracker/widgets/nav_drawer.dart';
+import 'package:sfi_equipment_tracker/widgets/list_views/inventory_list_view.dart';
+import 'package:sfi_equipment_tracker/widgets/drawer/nav_drawer.dart';
 import 'package:sfi_equipment_tracker/widgets/search_delegates.dart';
 
 class InventoryScreen extends StatefulWidget {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
-import 'package:sfi_equipment_tracker/widgets/global_inventory_list_view.dart';
-import 'package:sfi_equipment_tracker/widgets/inventory_list_view.dart';
+import 'package:sfi_equipment_tracker/widgets/list_views/global_inventory_list_view.dart';
+import 'package:sfi_equipment_tracker/widgets/list_views/inventory_list_view.dart';
 
 class InventorySearchDelegate extends SearchDelegate {
   final InventoryOwnerRelationship invOwnRel;

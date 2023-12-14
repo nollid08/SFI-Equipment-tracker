@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sfi_equipment_tracker/constants.dart';
-import 'package:sfi_equipment_tracker/widgets/nav_drawer.dart';
+import 'package:sfi_equipment_tracker/widgets/drawer/nav_drawer.dart';
 
 class AdaptedScaffold extends StatelessWidget {
   const AdaptedScaffold({
@@ -48,6 +48,7 @@ class AdaptedScaffold extends StatelessWidget {
                 ),
               ],
             ),
+      floatingActionButton: floatingActionButton,
     );
   }
 }

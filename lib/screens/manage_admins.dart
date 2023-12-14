@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sfi_equipment_tracker/widgets/adapted_scaffold.dart';
-import 'package:sfi_equipment_tracker/widgets/admins_list_view.dart';
+import 'package:sfi_equipment_tracker/widgets/admin/admins_list_view.dart';
 
 class ManageAdmins extends StatelessWidget {
   const ManageAdmins({super.key});

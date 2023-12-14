@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
 import 'package:sfi_equipment_tracker/screens/auth_gate.dart';
 import 'package:sfi_equipment_tracker/constants.dart';
 import 'firebase_options.dart';
@@ -30,7 +32,13 @@ class MyApp extends StatelessWidget {
         primaryColor: SchoolFitnessBlue,
         useMaterial3: true,
       ),
-      home: const AuthGate(),
+      home: StreamProvider.value(
+          value:
+              FirebaseFirestore.instance.collection("users").get().asStream(),
+          initialData: null,
+          builder: (context, snapshot) {
+            return const AuthGate();
+          }),
     );
   }
 }

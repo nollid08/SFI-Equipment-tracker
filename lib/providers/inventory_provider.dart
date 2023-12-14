@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sfi_equipment_tracker/providers/account_provider.dart';
+import 'package:sfi_equipment_tracker/providers/get_smart.dart';
 
 class Inventory {
   final List<InventoryItem> inventory;
@@ -58,7 +59,7 @@ class Inventory {
       // Get name and image
 
       final globalInventoryRef = db.collection("equipment").doc(id);
-      final doc = await globalInventoryRef.get();
+      final doc = await globalInventoryRef.getSavy();
       final supplementaryItemData = doc.data() as Map<String, dynamic>;
 
       final String imageRef = supplementaryItemData["imageRef"];
