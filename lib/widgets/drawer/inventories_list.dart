@@ -4,6 +4,8 @@ import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
 import 'package:sfi_equipment_tracker/screens/auth_gate.dart';
 import 'package:sfi_equipment_tracker/screens/inventory_screen.dart';
 
+import '../../models/inventory_owner_relationship.dart';
+
 class InventoriesList extends StatelessWidget {
   final String currentPageId;
   const InventoriesList({

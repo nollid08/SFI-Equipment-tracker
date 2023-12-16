@@ -8,6 +8,8 @@ import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
 import 'package:sfi_equipment_tracker/widgets/form/equipment_count_chooser.dart';
 import 'package:sfi_equipment_tracker/widgets/form/send_confirmation_text.dart';
 
+import '../../models/inventory_owner_relationship.dart';
+
 class SendEquipmentDialog extends StatefulWidget {
   final InventoryItem inventoryItem;
   final List<InventoryOwnerRelationship> inventoryRefs;

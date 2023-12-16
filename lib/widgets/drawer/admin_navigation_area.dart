@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sfi_equipment_tracker/providers/account_provider.dart';
+import 'package:sfi_equipment_tracker/models/account.dart';
 import 'package:sfi_equipment_tracker/screens/manage_admins.dart';
 import 'package:sfi_equipment_tracker/screens/manage_stock.dart';
 import 'package:sfi_equipment_tracker/screens/manage_storage_locations.dart';

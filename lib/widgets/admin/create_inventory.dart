@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:sfi_equipment_tracker/constants.dart';
-import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
+import 'package:sfi_equipment_tracker/models/inventory.dart';
 import 'package:sfi_equipment_tracker/providers/storage_location_provider.dart';
 
 class CreateInventoryDialog extends StatefulWidget {
@@ -78,7 +78,7 @@ class _CreateInventoryDialogState extends State<CreateInventoryDialog> {
                 onPressed: () {
                   if (_formKey.currentState?.saveAndValidate() ?? false) {
                     debugPrint(_formKey.currentState?.value.toString());
-                    StorageLocationProvider.create(
+                    StorageLocationManager.create(
                       currentStorageLocationName,
                     );
                     Navigator.pop(context);

@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:sfi_equipment_tracker/providers/account_provider.dart';
+import 'package:sfi_equipment_tracker/models/account.dart';
 import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
 import 'package:sfi_equipment_tracker/screens/manage_admins.dart';
 import 'package:sfi_equipment_tracker/screens/manage_stock.dart';
@@ -12,6 +12,8 @@ import 'package:sfi_equipment_tracker/screens/report_mising_equipment_screen.dar
 import 'package:sfi_equipment_tracker/widgets/drawer/admin_navigation_area.dart';
 import 'package:sfi_equipment_tracker/widgets/drawer/inventories_list.dart';
 import 'package:sfi_equipment_tracker/widgets/drawer/storage_locations_list.dart';
+
+import '../../models/inventory_owner_relationship.dart';
 
 class NavDrawer extends StatefulWidget {
   final String currentPageId;

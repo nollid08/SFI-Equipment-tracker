@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_image_picker/form_builder_image_picker.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:sfi_equipment_tracker/providers/equipment_provider.dart';
+import 'package:sfi_equipment_tracker/providers/global_equipment.dart';
 import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
 import 'package:sfi_equipment_tracker/screens/register_gate.dart';
+
+import '../../models/inventory_owner_relationship.dart';
 
 class AddNewEquipmentForm extends StatefulWidget {
   const AddNewEquipmentForm({Key? key}) : super(key: key);
@@ -161,7 +163,7 @@ class _AddNewEquipmentFormState extends State<AddNewEquipmentForm> {
         final InventoryOwnerRelationship recipientInventory = data["recipient"];
 
         final bool hasEquipmentRegistered =
-            await AllGlobalEquipment.registerEquipment(
+            await GlobalEquipment.registerEquipment(
           inventoryRef: recipientInventory.inventoryReference,
           name: equipmentName,
           quantity: equipmentQuantity,

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:sfi_equipment_tracker/providers/account_provider.dart';
+import 'package:sfi_equipment_tracker/models/account.dart';
 import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
 import 'package:sfi_equipment_tracker/widgets/modals/send_equipment.dart';
+
+import '../../models/inventory_owner_relationship.dart';
 
 class SendButton extends StatelessWidget {
   const SendButton({

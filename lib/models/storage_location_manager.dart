@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class StorageLocationProvider {
+class StorageLocationManager {
   static void create(String name) {
     final FirebaseFirestore db = FirebaseFirestore.instance;
     final storageLocationRef = db.collection("storageLocations").doc();

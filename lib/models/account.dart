@@ -10,11 +10,12 @@ class Account {
   final String name;
   final String uid;
   final AccountType type;
-
+  final DocumentSnapshot<Object?> snapshot;
   Account({
     required this.name,
     required this.uid,
     required this.type,
+    required this.snapshot,
   });
 
   static Future<Account> get(String uid) async {
@@ -66,6 +67,22 @@ class Account {
     }
   }
 
+  static Future<Account> getStorageLocation(String uid) async {
+    final FirebaseFirestore db = FirebaseFirestore.instance;
+    final storageLocationRef = db.collection("storageLocations").doc(uid);
+
+    try {
+      DocumentSnapshot storageLocation = await storageLocationRef.get();
+      final Account account =
+          Account.getStorageLocationAccountFromSnapshot(storageLocation);
+
+      return account;
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
   static Account getStorageLocationAccountFromSnapshot(
       DocumentSnapshot<Object?> snapshot) {
     final Map<String, dynamic> userData =
@@ -78,6 +95,7 @@ class Account {
       name: name,
       uid: uid,
       type: type,
+      snapshot: snapshot,
     );
   }
 
@@ -90,10 +108,10 @@ class Account {
     final String uid = snapshot.id;
 
     return Account(
-      name: name,
-      uid: uid,
-      type: isAdmin ? AccountType.admin : AccountType.coach,
-    );
+        name: name,
+        uid: uid,
+        type: isAdmin ? AccountType.admin : AccountType.coach,
+        snapshot: snapshot);
   }
 
   static Future<Account> getCurrent({
@@ -109,8 +127,7 @@ class Account {
           builder: (BuildContext context) => const AuthGate(),
         ),
       );
-
-      return Account(name: "", uid: "", type: AccountType.coach);
+      throw Exception("No user logged in");
     }
   }
 

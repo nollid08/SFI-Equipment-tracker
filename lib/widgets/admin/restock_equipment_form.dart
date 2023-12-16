@@ -2,9 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:sfi_equipment_tracker/providers/equipment_provider.dart';
+import 'package:sfi_equipment_tracker/providers/global_equipment.dart';
 import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
 import 'package:sfi_equipment_tracker/screens/register_gate.dart';
+
+import '../../models/inventory_owner_relationship.dart';
 
 class RestockEquipmentForm extends StatefulWidget {
   const RestockEquipmentForm({Key? key}) : super(key: key);
@@ -38,9 +40,9 @@ class _RestockEquipmentFormState extends State<RestockEquipmentForm> {
                 child: Column(
                   children: <Widget>[
                     FutureBuilder(
-                        future: AllGlobalEquipment.get(),
+                        future: GlobalEquipment.get(),
                         builder: (BuildContext context,
-                            AsyncSnapshot<AllGlobalEquipment> snapshot) {
+                            AsyncSnapshot<GlobalEquipment> snapshot) {
                           switch (snapshot.connectionState) {
                             case ConnectionState.none:
                               return const Text('Error 8754');
@@ -162,7 +164,7 @@ class _RestockEquipmentFormState extends State<RestockEquipmentForm> {
         final GlobalEquipmentItem equipment = data["equipment"];
         final int equipmentQuantity = data["equipment_quantity"].toInt();
         final InventoryOwnerRelationship recipientInventory = data["recipient"];
-        AllGlobalEquipment.updateTotalEquipmentQuantity(
+        GlobalEquipment.updateTotalEquipmentQuantity(
           equipmentId: equipment.id,
           quantity: equipmentQuantity,
         );

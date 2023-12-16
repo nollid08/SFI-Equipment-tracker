@@ -1,16 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
-import 'package:sfi_equipment_tracker/providers/account_provider.dart';
+import 'package:sfi_equipment_tracker/models/account.dart';
 import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
 import 'package:sfi_equipment_tracker/providers/storage_provider.dart';
 
-class AllGlobalEquipment {
+class GlobalEquipment {
   final List<GlobalEquipmentItem> equipmentList;
 
-  AllGlobalEquipment({required this.equipmentList});
+  GlobalEquipment({required this.equipmentList});
 
-  static Future<AllGlobalEquipment> get() async {
+  static Future<GlobalEquipment> get() async {
     final List<GlobalEquipmentItem> equipmentList = [];
 
     final db = FirebaseFirestore.instance;
@@ -39,7 +39,7 @@ class AllGlobalEquipment {
         ),
       );
     }
-    return AllGlobalEquipment(equipmentList: equipmentList);
+    return GlobalEquipment(equipmentList: equipmentList);
   }
 
   static Future<bool> registerEquipment({

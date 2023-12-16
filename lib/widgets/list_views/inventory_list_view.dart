@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:sfi_equipment_tracker/providers/account_provider.dart';
+import 'package:sfi_equipment_tracker/models/account.dart';
 import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
 import 'package:sfi_equipment_tracker/widgets/form/claim_button.dart';
 import 'package:sfi_equipment_tracker/widgets/form/send_button.dart';
 import 'package:sfi_equipment_tracker/widgets/list_views/equipment_image.dart';
+
+import '../../models/inventory_owner_relationship.dart';
 
 class InventoryListView extends StatelessWidget {
   final String searchCriteria;
