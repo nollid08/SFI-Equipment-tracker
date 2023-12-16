@@ -32,13 +32,7 @@ class MyApp extends StatelessWidget {
         primaryColor: SchoolFitnessBlue,
         useMaterial3: true,
       ),
-      home: StreamProvider.value(
-          value:
-              FirebaseFirestore.instance.collection("users").get().asStream(),
-          initialData: null,
-          builder: (context, snapshot) {
-            return const AuthGate();
-          }),
+      home: const AuthGate(),
     );
   }
 }

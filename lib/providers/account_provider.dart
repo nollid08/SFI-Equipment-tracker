@@ -26,37 +26,22 @@ class Account {
     final DocumentSnapshot<Map<String, dynamic>> potentialStorageLocationRef =
         await db.collection('storageLocations').doc(uid).get();
     if (potentialUserRef.exists) {
-      final userRef = db.collection("users").doc(uid);
+      final userRef = potentialUserRef;
       try {
-        DocumentSnapshot user = await userRef.get();
-        final Map userData = user.data() as Map;
-        final String name = userData['name'];
-        final bool isAdmin = userData['isAdmin'];
-        final AccountType type =
-            isAdmin ? AccountType.admin : AccountType.coach;
+        DocumentSnapshot user = userRef;
+        final Account account = Account.getCoachAccountFromSnapshot(user);
 
-        return Account(
-          name: name,
-          uid: uid,
-          type: type,
-        );
+        return account;
       } catch (e) {
         print(e);
         rethrow;
       }
     } else if (potentialStorageLocationRef.exists) {
-      final storageLocationRef = db.collection("storageLocations").doc(uid);
       try {
-        DocumentSnapshot storageLocation = await storageLocationRef.get();
-        final Map userData = storageLocation.data() as Map;
-        final String name = userData['name'];
-        const AccountType type = AccountType.storageLocation;
-
-        return Account(
-          name: name,
-          uid: uid,
-          type: type,
-        );
+        DocumentSnapshot storageLocation = potentialStorageLocationRef;
+        final Account account =
+            Account.getStorageLocationAccountFromSnapshot(storageLocation);
+        return account;
       } catch (e) {
         print(e);
         rethrow;
@@ -66,12 +51,57 @@ class Account {
     }
   }
 
+  static Future<Account> getCoach(String uid) async {
+    final FirebaseFirestore db = FirebaseFirestore.instance;
+    final userRef = db.collection("users").doc(uid);
+
+    try {
+      DocumentSnapshot user = await userRef.get();
+      final Account account = Account.getCoachAccountFromSnapshot(user);
+
+      return account;
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  static Account getStorageLocationAccountFromSnapshot(
+      DocumentSnapshot<Object?> snapshot) {
+    final Map<String, dynamic> userData =
+        snapshot.data() as Map<String, dynamic>;
+    final String name = userData['name'];
+    final String uid = snapshot.id;
+    const AccountType type = AccountType.storageLocation;
+
+    return Account(
+      name: name,
+      uid: uid,
+      type: type,
+    );
+  }
+
+  static Account getCoachAccountFromSnapshot(
+      DocumentSnapshot<Object?> snapshot) {
+    final Map<String, dynamic> userData =
+        snapshot.data() as Map<String, dynamic>;
+    final String name = userData['name'];
+    final bool isAdmin = userData['isAdmin'];
+    final String uid = snapshot.id;
+
+    return Account(
+      name: name,
+      uid: uid,
+      type: isAdmin ? AccountType.admin : AccountType.coach,
+    );
+  }
+
   static Future<Account> getCurrent({
     required BuildContext context,
   }) async {
     if (FirebaseAuth.instance.currentUser != null) {
       String currentUserUid = FirebaseAuth.instance.currentUser!.uid;
-      return Account.get(currentUserUid);
+      return Account.getCoach(currentUserUid);
     } else {
       Navigator.pushReplacement(
         context,

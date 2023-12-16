@@ -24,19 +24,8 @@ class InventoryListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final CollectionReference inventoryReference = invOwnRel.inventoryReference;
-    print(invOwnRel);
-    final FirebaseFirestore db = FirebaseFirestore.instance;
     final CollectionReference<Map<String, dynamic>> inventoryReference =
-        invOwnRel.owner.type == AccountType.storageLocation
-            ? db
-                .collection("storageLocations")
-                .doc(invOwnRel.owner.uid)
-                .collection("inventory")
-            : db
-                .collection("users")
-                .doc(invOwnRel.owner.uid)
-                .collection("inventory");
+        invOwnRel.inventoryReference;
 
     final Stream<QuerySnapshot<Map<String, dynamic>>> snapshots =
         inventoryReference.snapshots();

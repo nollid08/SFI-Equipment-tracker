@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:sfi_equipment_tracker/providers/account_provider.dart';
-import 'package:sfi_equipment_tracker/providers/get_smart.dart';
 
 class Inventory {
   final List<InventoryItem> inventory;
@@ -59,7 +57,7 @@ class Inventory {
       // Get name and image
 
       final globalInventoryRef = db.collection("equipment").doc(id);
-      final doc = await globalInventoryRef.getSavy();
+      final doc = await globalInventoryRef.get();
       final supplementaryItemData = doc.data() as Map<String, dynamic>;
 
       final String imageRef = supplementaryItemData["imageRef"];
@@ -190,15 +188,9 @@ class InventoryOwnerRelationship {
     final DocumentSnapshot<Map<String, dynamic>> potentialStorageLocationRef =
         await db.collection('storageLocations').doc(uid).get();
     if (potentialUserRef.exists) {
-      final Account owner = await Account.get(uid);
-      final CollectionReference<Map<String, dynamic>> reference =
-          db.collection("users").doc(owner.uid).collection("inventory");
-      final InventoryOwnerRelationship inventoryReference =
-          InventoryOwnerRelationship(
-        owner: owner,
-        inventoryReference: reference,
-      );
-      return inventoryReference;
+      final InventoryOwnerRelationship invOwnRel =
+          await getCoachFromSnapshot(potentialUserRef);
+      return invOwnRel;
     } else if (potentialStorageLocationRef.exists) {
       final Account owner = await Account.get(uid);
       final CollectionReference<Map<String, dynamic>> reference = db
@@ -216,41 +208,77 @@ class InventoryOwnerRelationship {
     }
   }
 
+  static Future<InventoryOwnerRelationship> getCoach(String uid) async {
+    final db = FirebaseFirestore.instance;
+    //check if doc with uid is in users collection (if statement)
+    final DocumentSnapshot<Map<String, dynamic>> userRef =
+        await db.collection('users').doc(uid).get();
+    return getCoachFromSnapshot(userRef);
+  }
+
+  static InventoryOwnerRelationship getCoachFromSnapshot(
+    DocumentSnapshot userRef,
+  ) {
+    final db = FirebaseFirestore.instance;
+    if (userRef.exists) {
+      final Account owner = Account.getCoachAccountFromSnapshot(userRef);
+      final CollectionReference<Map<String, dynamic>> reference =
+          db.collection("users").doc(owner.uid).collection("inventory");
+      final InventoryOwnerRelationship inventoryOwnerRelationship =
+          InventoryOwnerRelationship(
+        owner: owner,
+        inventoryReference: reference,
+      );
+      return inventoryOwnerRelationship;
+    } else {
+      throw Exception("No user with uid ${userRef.id}");
+    }
+  }
+
   static Future<List<InventoryOwnerRelationship>>
       getAllCoachInvOwnRels() async {
     final List<InventoryOwnerRelationship> inventoryRefs = [];
     final db = FirebaseFirestore.instance;
     final QuerySnapshot usersSnapshot = await db.collection("users").get();
     for (var userSnapshot in usersSnapshot.docs) {
-      final String uid = userSnapshot.id;
       final InventoryOwnerRelationship inventoryReference =
-          await InventoryOwnerRelationship.get(uid);
+          InventoryOwnerRelationship.getCoachFromSnapshot(userSnapshot);
       inventoryRefs.add(inventoryReference);
     }
 
     return inventoryRefs;
   }
 
-  static Future<List<InventoryOwnerRelationship>> getAllInvOwnRels() async {
-    final List<InventoryOwnerRelationship> inventoryRefs = [];
+  static InventoryOwnerRelationship getStorageLocationFromSnapshot(
+    DocumentSnapshot<Object?> storageLocationRef,
+  ) {
     final db = FirebaseFirestore.instance;
-    final QuerySnapshot usersSnapshot = await db.collection("users").get();
-    for (var userSnapshot in usersSnapshot.docs) {
-      final String uid = userSnapshot.id;
-      final InventoryOwnerRelationship inventoryReference =
-          await InventoryOwnerRelationship.get(uid);
-      inventoryRefs.add(inventoryReference);
-    }
-    final QuerySnapshot storageLocationsSnapshot =
-        await db.collection("storageLocations").get();
-    for (var storageLocationSnapshot in storageLocationsSnapshot.docs) {
-      final String uid = storageLocationSnapshot.id;
-      final InventoryOwnerRelationship inventoryReference =
-          await InventoryOwnerRelationship.get(uid);
-      inventoryRefs.add(inventoryReference);
-    }
+    if (storageLocationRef.exists) {
+      final Account owner =
+          Account.getStorageLocationAccountFromSnapshot(storageLocationRef);
 
-    return inventoryRefs;
+      final CollectionReference<Map<String, dynamic>> reference = db
+          .collection("storageLocations")
+          .doc(owner.uid)
+          .collection("inventory");
+      final InventoryOwnerRelationship inventoryOwnerRelationship =
+          InventoryOwnerRelationship(
+        owner: owner,
+        inventoryReference: reference,
+      );
+      return inventoryOwnerRelationship;
+    } else {
+      throw Exception("No user with uid ${storageLocationRef.id}");
+    }
+  }
+
+  static Future<InventoryOwnerRelationship> getStorageLocation(
+      String uid) async {
+    final db = FirebaseFirestore.instance;
+    //check if doc with uid is in users collection (if statement)
+    final DocumentSnapshot<Map<String, dynamic>> storageLocationRef =
+        await db.collection('storageLocations').doc(uid).get();
+    return getStorageLocationFromSnapshot(storageLocationRef);
   }
 
   static Future<List<InventoryOwnerRelationship>>
@@ -260,11 +288,23 @@ class InventoryOwnerRelationship {
     final QuerySnapshot storageLocationsSnapshot =
         await db.collection("storageLocations").get();
     for (var storageLocationSnapshot in storageLocationsSnapshot.docs) {
-      final String uid = storageLocationSnapshot.id;
       final InventoryOwnerRelationship inventoryReference =
-          await InventoryOwnerRelationship.get(uid);
+          InventoryOwnerRelationship.getStorageLocationFromSnapshot(
+              storageLocationSnapshot);
       inventoryRefs.add(inventoryReference);
     }
+
+    return inventoryRefs;
+  }
+
+  static Future<List<InventoryOwnerRelationship>> getAllInvOwnRels() async {
+    final List<InventoryOwnerRelationship> inventoryRefs = [];
+    final List<InventoryOwnerRelationship> coachInvOwnRels =
+        await getAllCoachInvOwnRels();
+    final List<InventoryOwnerRelationship> storageLocationInvOwnRels =
+        await getAllStorageLocations();
+    inventoryRefs.addAll(coachInvOwnRels);
+    inventoryRefs.addAll(storageLocationInvOwnRels);
 
     return inventoryRefs;
   }

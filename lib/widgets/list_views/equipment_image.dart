@@ -23,6 +23,7 @@ class EquipmentImage extends StatelessWidget {
                 imageUrl.data,
                 fit: BoxFit.cover,
                 width: 50,
+                cacheWidth: 50,
               ));
             } else {
               return const Center(
