@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:sfi_equipment_tracker/models/account.dart';
-import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
-import 'package:sfi_equipment_tracker/providers/storage_provider.dart';
+import 'package:sfi_equipment_tracker/models/image_manager.dart';
+import 'package:sfi_equipment_tracker/models/inventory.dart';
 
 class GlobalEquipment {
   final List<GlobalEquipmentItem> equipmentList;

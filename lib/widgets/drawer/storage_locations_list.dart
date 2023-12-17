@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
 import 'package:sfi_equipment_tracker/screens/auth_gate.dart';
 import 'package:sfi_equipment_tracker/screens/inventory_screen.dart';
 

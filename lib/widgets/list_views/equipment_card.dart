@@ -1,7 +1,7 @@
 // stateless widget that takes an equipment item and displays it in a card
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:sfi_equipment_tracker/providers/global_equipment.dart';
+import 'package:sfi_equipment_tracker/models/global_equipment.dart';
 
 class EquipmentCard extends StatelessWidget {
   final String equipmentId;

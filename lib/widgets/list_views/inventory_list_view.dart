@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:sfi_equipment_tracker/models/account.dart';
-import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
+import 'package:sfi_equipment_tracker/models/inventory.dart';
 import 'package:sfi_equipment_tracker/widgets/form/claim_button.dart';
 import 'package:sfi_equipment_tracker/widgets/form/send_button.dart';
 import 'package:sfi_equipment_tracker/widgets/list_views/equipment_image.dart';

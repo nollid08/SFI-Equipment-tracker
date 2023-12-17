@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sfi_equipment_tracker/models/account.dart';
-import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
+import 'package:sfi_equipment_tracker/models/inventory.dart';
 import 'package:sfi_equipment_tracker/widgets/modals/claim_equipment.dart';
 
 class ClaimButton extends StatelessWidget {

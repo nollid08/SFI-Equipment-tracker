@@ -2,11 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sfi_equipment_tracker/constants.dart';
 import 'package:sfi_equipment_tracker/models/account.dart';
-import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
 import 'package:sfi_equipment_tracker/screens/auth_gate.dart';
 import 'package:sfi_equipment_tracker/widgets/adapted_scaffold.dart';
 import 'package:sfi_equipment_tracker/widgets/list_views/inventory_list_view.dart';
-import 'package:sfi_equipment_tracker/widgets/drawer/nav_drawer.dart';
 import 'package:sfi_equipment_tracker/widgets/search_delegates.dart';
 
 import '../models/inventory_owner_relationship.dart';

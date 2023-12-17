@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:sfi_equipment_tracker/models/account.dart';
-import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
-import 'package:sfi_equipment_tracker/providers/storage_location_provider.dart';
 import 'package:sfi_equipment_tracker/screens/inventory_screen.dart';
 
 class AdminsListView extends StatefulWidget {

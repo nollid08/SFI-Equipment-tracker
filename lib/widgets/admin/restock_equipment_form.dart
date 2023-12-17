@@ -2,8 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:sfi_equipment_tracker/providers/global_equipment.dart';
-import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
+import 'package:sfi_equipment_tracker/models/global_equipment.dart';
+import 'package:sfi_equipment_tracker/models/inventory.dart';
 import 'package:sfi_equipment_tracker/screens/register_gate.dart';
 
 import '../../models/inventory_owner_relationship.dart';

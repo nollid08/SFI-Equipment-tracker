@@ -2,13 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:numberpicker/numberpicker.dart';
 import 'package:sfi_equipment_tracker/constants.dart';
-import 'package:sfi_equipment_tracker/providers/inventory_provider.dart';
+import 'package:sfi_equipment_tracker/models/inventory.dart';
+import 'package:sfi_equipment_tracker/models/inventory_owner_relationship.dart';
 import 'package:sfi_equipment_tracker/widgets/form/equipment_count_chooser.dart';
 import 'package:sfi_equipment_tracker/widgets/form/send_confirmation_text.dart';
-
-import '../../models/inventory_owner_relationship.dart';
 
 class SendEquipmentDialog extends StatefulWidget {
   final InventoryItem inventoryItem;
