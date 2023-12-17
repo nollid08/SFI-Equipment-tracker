@@ -1,10 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:sfi_equipment_tracker/constants.dart';
 import 'package:sfi_equipment_tracker/widgets/adapted_scaffold.dart';
 import 'package:sfi_equipment_tracker/widgets/list_views/global_inventory_list_view.dart';
-import 'package:sfi_equipment_tracker/widgets/drawer/nav_drawer.dart';
 import 'package:sfi_equipment_tracker/widgets/search_delegates.dart';
 
 Future<Map?> getInventory(String uid) async {

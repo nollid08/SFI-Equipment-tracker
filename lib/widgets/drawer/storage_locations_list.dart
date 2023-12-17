@@ -34,7 +34,7 @@ class StorageLocationsList extends StatelessWidget {
                   final List<ListTile> listTiles = [];
                   final List<InventoryOwnerRelationship> invOwnRels =
                       snapshot.data!;
-                  invOwnRels.forEach((invOwnRel) {
+                  for (var invOwnRel in invOwnRels) {
                     if (invOwnRel.owner.uid != currentUserUid) {
                       final String name = invOwnRel.owner.name;
 
@@ -53,9 +53,9 @@ class StorageLocationsList extends StatelessWidget {
                           });
                       listTiles.add(listTile);
                     } else {
-                      return;
+                      continue;
                     }
-                  });
+                  }
                   return Column(
                     children: listTiles,
                   );
@@ -72,7 +72,6 @@ class StorageLocationsList extends StatelessWidget {
                       child: CircularProgressIndicator(),
                     ),
                   );
-                  ;
                 }
               } else if (snapshot.hasError) {
                 return const Text('Something went wrong');

@@ -19,5 +19,5 @@ void initialiseUser({required String uid, required String name}) async {
       .collection("users")
       .doc(uid)
       .set(newUser)
-      .onError((e, _) => print("Error writing document: $e"));
+      .onError((e, _) => throw ("Error writing document: $e"));
 }

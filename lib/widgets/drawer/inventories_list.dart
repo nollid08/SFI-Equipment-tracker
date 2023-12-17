@@ -34,12 +34,10 @@ class InventoriesList extends StatelessWidget {
                   final List<ListTile> listTiles = [];
                   final List<InventoryOwnerRelationship> invOwnRels =
                       snapshot.data!;
-                  invOwnRels.forEach((invOwnRel) {
+                  for (var invOwnRel in invOwnRels) {
                     if (invOwnRel.owner.uid != currentUserUid) {
                       final String name = invOwnRel.owner.name;
                       final String listTileTitle = "$name's Inventory";
-
-                      print(listTileTitle);
                       final listTile = ListTile(
                           title: Text(listTileTitle),
                           selected: currentPageId ==
@@ -55,9 +53,9 @@ class InventoriesList extends StatelessWidget {
                           });
                       listTiles.add(listTile);
                     } else {
-                      return;
+                      continue;
                     }
-                  });
+                  }
                   return Column(
                     children: listTiles,
                   );

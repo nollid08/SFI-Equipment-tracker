@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:sfi_equipment_tracker/widgets/adapted_scaffold.dart';
 import 'package:sfi_equipment_tracker/widgets/admin/add_new_equipment_form.dart';
 import 'package:sfi_equipment_tracker/widgets/admin/restock_equipment_form.dart';
-import '../constants.dart';
-import '../widgets/drawer/nav_drawer.dart';
 
 class ManageStock extends StatelessWidget {
   const ManageStock({super.key});

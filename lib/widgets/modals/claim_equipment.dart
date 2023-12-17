@@ -38,14 +38,6 @@ class _ClaimEquipmentDialogState extends State<ClaimEquipmentDialog> {
     _onChanged(val);
   }
 
-  void _onSubmit(dynamic val) {
-    setState(() {
-      currentEquipmenQuantity = val.round();
-    });
-
-    _onChanged(val);
-  }
-
   @override
   Widget build(BuildContext context) {
     final InventoryItem equipmentItem = widget.inventoryItem;
@@ -98,7 +90,7 @@ class _ClaimEquipmentDialogState extends State<ClaimEquipmentDialog> {
                 ElevatedButton(
                   style: ButtonStyle(
                     backgroundColor:
-                        MaterialStateProperty.all<Color>(SchoolFitnessBlue),
+                        MaterialStateProperty.all<Color>(schoolFitnessBlue),
                   ),
                   onPressed: () {
                     if (_formKey.currentState?.saveAndValidate() ?? false) {

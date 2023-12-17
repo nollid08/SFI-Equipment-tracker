@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:sfi_equipment_tracker/models/account.dart';
 
 import '../models/inventory_owner_relationship.dart';
 
@@ -84,8 +83,6 @@ class Inventory {
     required String equipmentId,
     required int transferQuota,
   }) async {
-    // Get the count of the equipment in the originAccount's inventory
-    final db = FirebaseFirestore.instance;
     final InventoryOwnerRelationship originInvOwnRel =
         await InventoryOwnerRelationship.get(origineeUid);
     final originEquipmentRef =

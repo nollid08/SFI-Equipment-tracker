@@ -22,7 +22,6 @@ class AdaptedScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double deviceWidth = MediaQuery.of(context).size.shortestSide;
-    print(deviceWidth);
     bool isPortrait = deviceWidth <= FormFactor.portrait;
     return Scaffold(
       appBar: AppBar(
@@ -34,7 +33,7 @@ class AdaptedScaffold extends StatelessWidget {
           ),
           bottom: bottom,
           centerTitle: true,
-          backgroundColor: SchoolFitnessBlue,
+          backgroundColor: schoolFitnessBlue,
           foregroundColor: Colors.white,
           actions: actions),
       drawer: isPortrait ? NavDrawer(currentPageId: currentPageId) : null,

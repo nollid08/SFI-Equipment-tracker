@@ -40,7 +40,6 @@ class InventorySearchDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    print(invOwnRel.inventoryReference.path);
     return InventoryListView(
       invOwnRel: invOwnRel,
       isPersonalInventory: isPersonalInventory,
@@ -51,7 +50,6 @@ class InventorySearchDelegate extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    print(invOwnRel.inventoryReference.path);
     return InventoryListView(
       invOwnRel: invOwnRel,
       isPersonalInventory: isPersonalInventory,

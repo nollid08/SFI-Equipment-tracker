@@ -79,7 +79,7 @@ class GlobalEquipment {
         "name": newEquipment.name,
         "imageRef": newEquipment.imageRef,
         "totalQuantity": newEquipment.quantity
-      }).onError((e, _) => print("Error writing document: $e"));
+      }).onError((e, _) => throw ("Error writing document: $e"));
       return true;
     } else {
       return false;
@@ -162,7 +162,7 @@ class GlobalEquipmentOwnerRelationships {
           userRef.collection("inventory");
       final DocumentSnapshot doc = await inventoryRef.doc(equipmentId).get();
       if (doc.exists) {
-        final Account user = await Account.get("mkhK7z6u64gq7gyqt2zXD9sWIRV2");
+        final Account user = await Account.get(userId);
         final String userName = user.name;
         final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
         final int quantity = data["quantity"];
@@ -173,9 +173,6 @@ class GlobalEquipmentOwnerRelationships {
           equipmentCount: quantity,
         );
         equipmentUserRelationships.relationships.add(equipmentUserRelationship);
-        print("Successfully completed");
-      } else {
-        print("No such document!");
       }
     }
 

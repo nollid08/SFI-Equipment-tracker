@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:sfi_equipment_tracker/constants.dart';
 import 'package:sfi_equipment_tracker/models/account.dart';
 import 'package:sfi_equipment_tracker/screens/auth_gate.dart';
 import 'package:sfi_equipment_tracker/widgets/adapted_scaffold.dart';

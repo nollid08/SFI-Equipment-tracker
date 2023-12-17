@@ -54,7 +54,6 @@ class EquipmentCard extends StatelessWidget {
                                 child: CircularProgressIndicator(),
                               ),
                             );
-                            ;
                           }
                         }),
                     Padding(

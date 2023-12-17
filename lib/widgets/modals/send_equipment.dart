@@ -162,7 +162,7 @@ class _SendEquipmentDialogState extends State<SendEquipmentDialog> {
                   child: ElevatedButton(
                     style: ButtonStyle(
                       backgroundColor:
-                          MaterialStateProperty.all<Color>(SchoolFitnessBlue),
+                          MaterialStateProperty.all<Color>(schoolFitnessBlue),
                     ),
                     onPressed: () => onSubmit(equipmentItem),
                     child: const Text(

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:sfi_equipment_tracker/constants.dart';
-import 'package:sfi_equipment_tracker/models/inventory.dart';
 import 'package:sfi_equipment_tracker/models/storage_location_manager.dart';
 
 class CreateInventoryDialog extends StatefulWidget {
@@ -73,7 +72,7 @@ class _CreateInventoryDialogState extends State<CreateInventoryDialog> {
               ElevatedButton(
                 style: ButtonStyle(
                   backgroundColor:
-                      MaterialStateProperty.all<Color>(SchoolFitnessBlue),
+                      MaterialStateProperty.all<Color>(schoolFitnessBlue),
                 ),
                 onPressed: () {
                   if (_formKey.currentState?.saveAndValidate() ?? false) {

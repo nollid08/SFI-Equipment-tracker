@@ -28,25 +28,15 @@ class Account {
         await db.collection('storageLocations').doc(uid).get();
     if (potentialUserRef.exists) {
       final userRef = potentialUserRef;
-      try {
-        DocumentSnapshot user = userRef;
-        final Account account = Account.getCoachAccountFromSnapshot(user);
+      DocumentSnapshot user = userRef;
+      final Account account = Account.getCoachAccountFromSnapshot(user);
 
-        return account;
-      } catch (e) {
-        print(e);
-        rethrow;
-      }
+      return account;
     } else if (potentialStorageLocationRef.exists) {
-      try {
-        DocumentSnapshot storageLocation = potentialStorageLocationRef;
-        final Account account =
-            Account.getStorageLocationAccountFromSnapshot(storageLocation);
-        return account;
-      } catch (e) {
-        print(e);
-        rethrow;
-      }
+      DocumentSnapshot storageLocation = potentialStorageLocationRef;
+      final Account account =
+          Account.getStorageLocationAccountFromSnapshot(storageLocation);
+      return account;
     } else {
       throw Exception("No user with uid $uid");
     }
@@ -55,32 +45,21 @@ class Account {
   static Future<Account> getCoach(String uid) async {
     final FirebaseFirestore db = FirebaseFirestore.instance;
     final userRef = db.collection("users").doc(uid);
+    DocumentSnapshot user = await userRef.get();
+    final Account account = Account.getCoachAccountFromSnapshot(user);
 
-    try {
-      DocumentSnapshot user = await userRef.get();
-      final Account account = Account.getCoachAccountFromSnapshot(user);
-
-      return account;
-    } catch (e) {
-      print(e);
-      rethrow;
-    }
+    return account;
   }
 
   static Future<Account> getStorageLocation(String uid) async {
     final FirebaseFirestore db = FirebaseFirestore.instance;
     final storageLocationRef = db.collection("storageLocations").doc(uid);
 
-    try {
-      DocumentSnapshot storageLocation = await storageLocationRef.get();
-      final Account account =
-          Account.getStorageLocationAccountFromSnapshot(storageLocation);
+    DocumentSnapshot storageLocation = await storageLocationRef.get();
+    final Account account =
+        Account.getStorageLocationAccountFromSnapshot(storageLocation);
 
-      return account;
-    } catch (e) {
-      print(e);
-      rethrow;
-    }
+    return account;
   }
 
   static Account getStorageLocationAccountFromSnapshot(
@@ -142,7 +121,6 @@ class Account {
       await userRef.update({'isAdmin': isAdmin});
       return true;
     } catch (e) {
-      print(e);
       return false;
     }
   }

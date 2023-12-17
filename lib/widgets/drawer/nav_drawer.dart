@@ -1,12 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:sfi_equipment_tracker/models/account.dart';
-import 'package:sfi_equipment_tracker/screens/manage_admins.dart';
-import 'package:sfi_equipment_tracker/screens/manage_stock.dart';
 import 'package:sfi_equipment_tracker/screens/all_equipment.dart';
 import 'package:sfi_equipment_tracker/screens/auth_gate.dart';
 import 'package:sfi_equipment_tracker/screens/inventory_screen.dart';
-import 'package:sfi_equipment_tracker/screens/manage_storage_locations.dart';
 import 'package:sfi_equipment_tracker/screens/report_mising_equipment_screen.dart';
 import 'package:sfi_equipment_tracker/widgets/drawer/admin_navigation_area.dart';
 import 'package:sfi_equipment_tracker/widgets/drawer/inventories_list.dart';
