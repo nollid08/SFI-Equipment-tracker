@@ -5,6 +5,7 @@ import 'package:form_builder_image_picker/form_builder_image_picker.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:sfi_equipment_tracker/models/global_equipment.dart';
 import 'package:sfi_equipment_tracker/screens/register_gate.dart';
+import 'package:sfi_equipment_tracker/widgets/form/equipment_count_chooser.dart';
 
 import '../../models/inventory_owner_relationship.dart';
 
@@ -33,7 +34,7 @@ class _AddNewEquipmentFormState extends State<AddNewEquipmentForm> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(6.0),
         child: Column(
           children: <Widget>[
             FormBuilder(
@@ -44,100 +45,64 @@ class _AddNewEquipmentFormState extends State<AddNewEquipmentForm> {
                 padding: const EdgeInsets.all(8),
                 child: Column(
                   children: <Widget>[
-                    FormBuilderTextField(
-                      name: 'equipment_name',
-                      decoration: InputDecoration(
-                        hintText: 'Equipment Name',
-                        hintStyle: const TextStyle(fontSize: 16),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(
-                            width: 0,
-                            style: BorderStyle.solid,
-                          ),
-                        ),
+                    const EquipmentNameTextBox(),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 2,
+                        vertical: 6,
                       ),
-                      validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.required(),
-                      ]),
+                      child: Divider(),
                     ),
-                    FormBuilderSlider(
-                      name: 'equipment_quantity',
-                      validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.min(1),
-                      ]),
-                      onChanged: _onChanged,
-                      min: 0.0,
-                      max: 100.0,
-                      initialValue: 7.0,
-                      divisions: 100,
-                      activeColor: Colors.blue[900],
-                      inactiveColor: Colors.blue[100],
-                      decoration: const InputDecoration(
-                        labelText: 'Equipment Quantity',
+                    EquipmentCountChooser(
+                      onSliderChanged: _onChanged,
+                      equipmentCount: 200,
+                      initialValue: 50,
+                      customLabel: "Select amount To Be Added",
+                      isBold: true,
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 2,
+                        vertical: 2,
                       ),
+                      child: Divider(),
                     ),
                     FormBuilderImagePicker(
                       name: 'equipment_image',
-                      decoration:
-                          const InputDecoration(labelText: 'Pick Photo'),
+                      decoration: const InputDecoration(
+                        labelText: 'Pick Photo',
+                        labelStyle: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                        border: InputBorder.none,
+                      ),
                       maxImages: 1,
                       validator: FormBuilderValidators.compose([
                         FormBuilderValidators.required(),
                       ]),
                     ),
-                    FutureBuilder(
-                        future: InventoryOwnerRelationship.getAllInvOwnRels(),
-                        builder: (BuildContext context,
-                            AsyncSnapshot<List<InventoryOwnerRelationship>>
-                                snapshot) {
-                          switch (snapshot.connectionState) {
-                            case ConnectionState.none:
-                              return const Center(
-                                child: SizedBox.square(
-                                  dimension: 100,
-                                  child: CircularProgressIndicator(),
-                                ),
-                              );
-                            case ConnectionState.waiting:
-                              return const Center(
-                                child: SizedBox.square(
-                                  dimension: 100,
-                                  child: CircularProgressIndicator(),
-                                ),
-                              );
-                            default:
-                              if (snapshot.hasError) {
-                                return Text('Error: ${snapshot.error}');
-                              } else {
-                                final List<InventoryOwnerRelationship>?
-                                    invOwnRels = snapshot.data;
-                                if (invOwnRels != null) {
-                                  return FormBuilderDropdown(
-                                    name: "recipient",
-                                    items: invOwnRels
-                                        .map(
-                                          (invOwnRel) => DropdownMenuItem(
-                                            value: invOwnRel,
-                                            child: Text(invOwnRel.owner.name),
-                                          ),
-                                        )
-                                        .toList(),
-                                    validator: FormBuilderValidators.compose([
-                                      FormBuilderValidators.required(),
-                                    ]),
-                                  );
-                                } else {
-                                  throw ("No Inventories Found!!!");
-                                }
-                              }
-                          }
-                        }),
-                    MaterialButton(
-                      color: Theme.of(context).colorScheme.secondary,
+                    const Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 2,
+                        vertical: 6,
+                      ),
+                      child: Divider(),
+                    ),
+                    const SelectInventoryDropdown(),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 2,
+                        vertical: 6,
+                      ),
+                      child: Divider(),
+                    ),
+                    OutlinedButton.icon(
+                      icon: const Icon(Icons.add),
                       onPressed: submitForm,
-                      child: const Text('Add Stock',
-                          style: TextStyle(color: Colors.white)),
+                      label: const Text(
+                        'Add Stock',
+                      ),
                     )
                   ],
                 ),
@@ -206,5 +171,105 @@ class _AddNewEquipmentFormState extends State<AddNewEquipmentForm> {
         );
       }
     }
+  }
+}
+
+class SelectInventoryDropdown extends StatelessWidget {
+  const SelectInventoryDropdown({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Select Inventory:',
+            style: TextStyle(fontWeight: FontWeight.bold)),
+        const SizedBox(
+          height: 6,
+        ),
+        FutureBuilder(
+            future: InventoryOwnerRelationship.getAllInvOwnRels(),
+            builder: (BuildContext context,
+                AsyncSnapshot<List<InventoryOwnerRelationship>> snapshot) {
+              switch (snapshot.connectionState) {
+                case ConnectionState.none:
+                  return const Center(
+                    child: SizedBox.square(
+                      dimension: 60,
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                case ConnectionState.waiting:
+                  return const Center(
+                    child: SizedBox.square(
+                      dimension: 60,
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                default:
+                  if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    final List<InventoryOwnerRelationship>? invOwnRels =
+                        snapshot.data;
+                    if (invOwnRels != null) {
+                      return FormBuilderDropdown(
+                        name: "recipient",
+                        items: invOwnRels
+                            .map(
+                              (invOwnRel) => DropdownMenuItem(
+                                value: invOwnRel,
+                                child: Text(invOwnRel.owner.name),
+                              ),
+                            )
+                            .toList(),
+                        validator: FormBuilderValidators.compose([
+                          FormBuilderValidators.required(),
+                        ]),
+                        decoration: const InputDecoration(
+                          labelText: 'Where is it stored?',
+                          border: OutlineInputBorder(),
+                        ),
+                      );
+                    } else {
+                      throw ("No Inventories Found!!!");
+                    }
+                  }
+              }
+            }),
+      ],
+    );
+  }
+}
+
+class EquipmentNameTextBox extends StatelessWidget {
+  const EquipmentNameTextBox({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Equipment Name',
+            style: TextStyle(fontWeight: FontWeight.bold)),
+        const SizedBox(
+          height: 6,
+        ),
+        FormBuilderTextField(
+          name: 'equipment_name',
+          decoration: const InputDecoration(
+            labelText: 'Name of new equipment?',
+            border: OutlineInputBorder(),
+          ),
+          validator: FormBuilderValidators.compose([
+            FormBuilderValidators.required(),
+          ]),
+        ),
+      ],
+    );
   }
 }

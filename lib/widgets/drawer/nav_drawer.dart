@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:sfi_equipment_tracker/screens/all_equipment.dart';
 import 'package:sfi_equipment_tracker/screens/auth_gate.dart';
 import 'package:sfi_equipment_tracker/screens/inventory_screen.dart';
-import 'package:sfi_equipment_tracker/screens/report_mising_equipment_screen.dart';
+import 'package:sfi_equipment_tracker/screens/report_unusable_equipment_screen.dart';
 import 'package:sfi_equipment_tracker/widgets/drawer/admin_navigation_area.dart';
 import 'package:sfi_equipment_tracker/widgets/drawer/inventories_list.dart';
 import 'package:sfi_equipment_tracker/widgets/drawer/storage_locations_list.dart';
@@ -113,7 +113,8 @@ class _NavDrawerState extends State<NavDrawer> {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => const ReportMissingEquipmentScreen()),
+                    builder: (context) =>
+                        const ReportUnusableEquipmentScreen()),
               );
             },
           ),

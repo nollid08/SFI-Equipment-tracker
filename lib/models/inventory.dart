@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:sfi_equipment_tracker/models/global_equipment.dart';
+import 'package:sfi_equipment_tracker/models/logs.dart';
 
 import '../models/inventory_owner_relationship.dart';
 
@@ -77,6 +79,17 @@ class Inventory {
     return Inventory(inventory: inventory);
   }
 
+  static Future<Inventory> getFromInvOwnRel(
+      InventoryOwnerRelationship invOwnRel) async {
+    final inventoryRef = invOwnRel.inventoryReference;
+    //get all Documents in the inventory
+
+    final QuerySnapshot<Map<String, dynamic>> inventorySnapshot =
+        await inventoryRef.get();
+    final Inventory inventory = await getFromSnapshot(inventorySnapshot);
+    return inventory;
+  }
+
   static void transferEquipmentItem({
     required String origineeUid,
     required String recipientUid,
@@ -117,6 +130,15 @@ class Inventory {
     } else {
       await recipientEquipmentRef.set({"quantity": newrecipientEquipmentCount});
     }
+
+    final Log log = Log(
+      time: DateTime.now(),
+      recipientUid: recipientUid,
+      origineeUid: origineeUid,
+      equipmentId: equipmentId,
+      quantityTransferred: transferQuota,
+    );
+    Logs.submit(log);
     // Get rid of equipment items with a count of 0!
     cleanUpInventory(originInvOwnRel.inventoryReference);
     cleanUpInventory(recipientInvOwnRel.inventoryReference);
@@ -143,6 +165,14 @@ class Inventory {
     } else {
       await equipmentRef.set({"quantity": newEquipmentCount});
     }
+    final Log log = Log(
+      time: DateTime.now(),
+      recipientUid: invOwnRel.owner.uid,
+      origineeUid: "N/A",
+      equipmentId: equipmentId,
+      quantityTransferred: quantity,
+    );
+    Logs.submit(log);
   }
 
   static void cleanUpInventory(
@@ -156,6 +186,40 @@ class Inventory {
         inventoryItem.reference.delete();
       }
     }
+  }
+
+  static Future<void> reportEquipmentItem({
+    required InventoryItem inventoryItem,
+    required int quantityUnusable,
+    required InventoryOwnerRelationship invOwnRel,
+    required String reporterUid,
+    required String description,
+    required String cause,
+  }) async {
+    final report = {
+      "time": Timestamp.now(),
+      "cause": cause,
+      "item": inventoryItem.id,
+      "ownerUid": invOwnRel.owner.uid,
+      "reporterUid": reporterUid,
+      "description": description,
+      "quantityUnusable": quantityUnusable,
+    };
+    final db = FirebaseFirestore.instance;
+    final reportRef = await db.collection("reports").doc().set(report);
+
+    //Remove the equipment from the inventory
+    final equipmentRef = invOwnRel.inventoryReference.doc(inventoryItem.id);
+    final equipmentDoc = await equipmentRef.get();
+    final equipmentData = equipmentDoc.data() as Map<String, dynamic>;
+    final int updatedEquipmentCount =
+        equipmentData["quantity"] - quantityUnusable;
+    await equipmentRef.update({"quantity": updatedEquipmentCount});
+    GlobalEquipment.updateTotalEquipmentQuantity(
+      equipmentId: inventoryItem.id,
+      quantity: -quantityUnusable,
+    );
+    cleanUpInventory(invOwnRel.inventoryReference);
   }
 }
 

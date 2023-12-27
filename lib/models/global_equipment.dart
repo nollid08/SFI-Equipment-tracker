@@ -86,7 +86,7 @@ class GlobalEquipment {
     }
   }
 
-  static void updateTotalEquipmentQuantity({
+  static Future<void> updateTotalEquipmentQuantity({
     required String equipmentId,
     required int quantity,
   }) async {

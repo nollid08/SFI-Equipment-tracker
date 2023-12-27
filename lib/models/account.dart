@@ -93,6 +93,41 @@ class Account {
         snapshot: snapshot);
   }
 
+  static Future<List<Account>> getAllCoaches() async {
+    final FirebaseFirestore db = FirebaseFirestore.instance;
+    final coaches = await db.collection("users").get();
+    final List<Account> accounts = [];
+    coaches.docs.forEach((coach) {
+      final Account account = Account.getCoachAccountFromSnapshot(coach);
+      accounts.add(account);
+    });
+
+    return accounts;
+  }
+
+  static Future<List<Account>> getAllStorageLocations() async {
+    final FirebaseFirestore db = FirebaseFirestore.instance;
+    final storageLocations = await db.collection("storageLocations").get();
+    final List<Account> accounts = [];
+    storageLocations.docs.forEach((storageLocation) {
+      final Account account =
+          Account.getStorageLocationAccountFromSnapshot(storageLocation);
+      accounts.add(account);
+    });
+
+    return accounts;
+  }
+
+  static Future<List<Account>> getAll() async {
+    final List<Account> accounts = [];
+    final List<Account> coaches = await Account.getAllCoaches();
+    final List<Account> storageLocations =
+        await Account.getAllStorageLocations();
+    accounts.addAll(coaches);
+    accounts.addAll(storageLocations);
+    return accounts;
+  }
+
   static Future<Account> getCurrent({
     required BuildContext context,
   }) async {

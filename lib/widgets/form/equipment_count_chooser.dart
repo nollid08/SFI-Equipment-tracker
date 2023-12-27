@@ -7,10 +7,14 @@ class EquipmentCountChooser extends StatefulWidget {
     required this.onSliderChanged,
     required this.equipmentCount,
     required this.initialValue,
+    this.isBold = false,
+    this.customLabel = 'Select Amount to be transferred,',
   });
   final void Function(num?) onSliderChanged;
   final int equipmentCount;
   final int initialValue;
+  final bool isBold;
+  final String customLabel;
 
   @override
   State<EquipmentCountChooser> createState() => _EquipmentCountChooserState();
@@ -22,11 +26,11 @@ class _EquipmentCountChooserState extends State<EquipmentCountChooser> {
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {
-        if (currentValue == -1) {
+      if (currentValue == -1) {
+        setState(() {
           currentValue = widget.initialValue;
-        }
-      });
+        });
+      }
     });
     if (widget.equipmentCount == 1) {
       return const Text("1 Item To be transferred");
@@ -39,7 +43,11 @@ class _EquipmentCountChooserState extends State<EquipmentCountChooser> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-              'Select Amount to be transferred, (Max: ${widget.equipmentCount})'),
+            '${widget.customLabel} (Max: ${widget.equipmentCount})',
+            style: TextStyle(
+                fontWeight:
+                    widget.isBold ? FontWeight.bold : FontWeight.normal),
+          ),
           Center(
             child: NumberPicker(
               value: currentValue > 0 ? currentValue : widget.initialValue,

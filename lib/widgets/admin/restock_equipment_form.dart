@@ -5,6 +5,7 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:sfi_equipment_tracker/models/global_equipment.dart';
 import 'package:sfi_equipment_tracker/models/inventory.dart';
 import 'package:sfi_equipment_tracker/screens/register_gate.dart';
+import 'package:sfi_equipment_tracker/widgets/form/equipment_count_chooser.dart';
 
 import '../../models/inventory_owner_relationship.dart';
 
@@ -39,110 +40,33 @@ class _RestockEquipmentFormState extends State<RestockEquipmentForm> {
                 padding: const EdgeInsets.all(8),
                 child: Column(
                   children: <Widget>[
-                    FutureBuilder(
-                        future: GlobalEquipment.get(),
-                        builder: (BuildContext context,
-                            AsyncSnapshot<GlobalEquipment> snapshot) {
-                          switch (snapshot.connectionState) {
-                            case ConnectionState.none:
-                              return const Text('Error 8754');
-                            case ConnectionState.waiting:
-                              return const Center(
-                                child: SizedBox.square(
-                                  dimension: 100,
-                                  child: CircularProgressIndicator(),
-                                ),
-                              );
-                            default:
-                              if (snapshot.hasError) {
-                                return Text('Error: ${snapshot.error}');
-                              } else {
-                                final List<GlobalEquipmentItem>? inventoryRefs =
-                                    snapshot.data?.equipmentList;
-                                if (inventoryRefs != null) {
-                                  return FormBuilderDropdown(
-                                    name: "equipment",
-                                    items: inventoryRefs
-                                        .map(
-                                          (inventoryRefs) => DropdownMenuItem(
-                                            value: inventoryRefs,
-                                            child: Text(inventoryRefs.name),
-                                          ),
-                                        )
-                                        .toList(),
-                                    validator: FormBuilderValidators.compose([
-                                      FormBuilderValidators.required(),
-                                    ]),
-                                  );
-                                } else {
-                                  return const Text("No Equipment Found!!!");
-                                }
-                              }
-                          }
-                        }),
-                    FormBuilderSlider(
-                      name: 'equipment_quantity',
-                      validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.min(1),
-                      ]),
-                      onChanged: _onChanged,
-                      min: 0.0,
-                      max: 100.0,
-                      initialValue: 7.0,
-                      divisions: 100,
-                      activeColor: Colors.blue[900],
-                      inactiveColor: Colors.blue[100],
-                      decoration: const InputDecoration(
-                        labelText: 'Equipment Quantity',
+                    const EquipmentDropdown(),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 2,
+                        vertical: 6,
                       ),
+                      child: Divider(),
                     ),
-                    FutureBuilder(
-                        future: InventoryOwnerRelationship.getAllInvOwnRels(),
-                        builder: (BuildContext context,
-                            AsyncSnapshot<List<InventoryOwnerRelationship>>
-                                snapshot) {
-                          switch (snapshot.connectionState) {
-                            case ConnectionState.none:
-                              return const Text('error 6901');
-                            case ConnectionState.waiting:
-                              return const Center(
-                                child: SizedBox.square(
-                                  dimension: 100,
-                                  child: CircularProgressIndicator(),
-                                ),
-                              );
-                            default:
-                              if (snapshot.hasError) {
-                                return Text('Error: ${snapshot.error}');
-                              } else {
-                                final List<InventoryOwnerRelationship>?
-                                    invOwnRels = snapshot.data;
-                                if (invOwnRels != null) {
-                                  return FormBuilderDropdown(
-                                    name: "recipient",
-                                    items: invOwnRels
-                                        .map(
-                                          (invOwnRel) => DropdownMenuItem(
-                                            value: invOwnRel,
-                                            child: Text(invOwnRel.owner.name),
-                                          ),
-                                        )
-                                        .toList(),
-                                    validator: FormBuilderValidators.compose([
-                                      FormBuilderValidators.required(),
-                                    ]),
-                                  );
-                                } else {
-                                  throw ("No Inventories Found!!!");
-                                }
-                              }
-                          }
-                        }),
-                    MaterialButton(
-                      color: Theme.of(context).colorScheme.secondary,
+                    EquipmentCountChooser(
+                      onSliderChanged: _onChanged,
+                      equipmentCount: 200,
+                      initialValue: 50,
+                      customLabel: "Select amount To Be Added",
+                      isBold: true,
+                    ),
+                    const InventoryDropdown(),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 2,
+                        vertical: 6,
+                      ),
+                      child: Divider(),
+                    ),
+                    OutlinedButton.icon(
+                      icon: const Icon(Icons.add),
                       onPressed: submitForm,
-                      child: const Text('Add Stock',
-                          style: TextStyle(color: Colors.white)),
+                      label: const Text('Add Stock'),
                     )
                   ],
                 ),
@@ -181,5 +105,135 @@ class _RestockEquipmentFormState extends State<RestockEquipmentForm> {
         );
       }
     }
+  }
+}
+
+class InventoryDropdown extends StatelessWidget {
+  const InventoryDropdown({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Select Inventory:',
+            style: TextStyle(fontWeight: FontWeight.bold)),
+        const SizedBox(
+          height: 6,
+        ),
+        FutureBuilder(
+            future: InventoryOwnerRelationship.getAllInvOwnRels(),
+            builder: (BuildContext context,
+                AsyncSnapshot<List<InventoryOwnerRelationship>> snapshot) {
+              switch (snapshot.connectionState) {
+                case ConnectionState.none:
+                  return const Text('error 6901');
+                case ConnectionState.waiting:
+                  return const Center(
+                    child: SizedBox.square(
+                      dimension: 100,
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                default:
+                  if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    final List<InventoryOwnerRelationship>? invOwnRels =
+                        snapshot.data;
+                    if (invOwnRels != null) {
+                      return FormBuilderDropdown(
+                        name: "recipient",
+                        items: invOwnRels
+                            .map(
+                              (invOwnRel) => DropdownMenuItem(
+                                value: invOwnRel,
+                                child: Text(invOwnRel.owner.name),
+                              ),
+                            )
+                            .toList(),
+                        validator: FormBuilderValidators.compose([
+                          FormBuilderValidators.required(),
+                        ]),
+                        decoration: const InputDecoration(
+                          labelText: 'Where is it stored?',
+                          border: OutlineInputBorder(),
+                        ),
+                      );
+                    } else {
+                      throw ("No Inventories Found!!!");
+                    }
+                  }
+              }
+            }),
+      ],
+    );
+  }
+}
+
+class EquipmentDropdown extends StatelessWidget {
+  const EquipmentDropdown({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Select Equipment:',
+            style: TextStyle(fontWeight: FontWeight.bold)),
+        const SizedBox(
+          height: 6,
+        ),
+        FutureBuilder(
+            future: GlobalEquipment.get(),
+            builder: (BuildContext context,
+                AsyncSnapshot<GlobalEquipment> snapshot) {
+              switch (snapshot.connectionState) {
+                case ConnectionState.none:
+                  return const Text('Error 8754');
+                case ConnectionState.waiting:
+                  return const Center(
+                    child: SizedBox.square(
+                      dimension: 100,
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                default:
+                  if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    final List<GlobalEquipmentItem>? inventoryRefs =
+                        snapshot.data?.equipmentList;
+                    if (inventoryRefs != null) {
+                      return FormBuilderDropdown(
+                        name: "equipment",
+                        items: inventoryRefs
+                            .map(
+                              (inventoryRefs) => DropdownMenuItem(
+                                value: inventoryRefs,
+                                child: Text(inventoryRefs.name),
+                              ),
+                            )
+                            .toList(),
+                        validator: FormBuilderValidators.compose([
+                          FormBuilderValidators.required(),
+                        ]),
+                        decoration: const InputDecoration(
+                          labelText: 'What Equipment is Restocked?',
+                          border: OutlineInputBorder(),
+                        ),
+                      );
+                    } else {
+                      return const Text("No Equipment Found!!!");
+                    }
+                  }
+              }
+            }),
+      ],
+    );
   }
 }

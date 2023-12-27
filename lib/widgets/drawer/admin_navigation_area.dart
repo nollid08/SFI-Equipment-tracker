@@ -3,6 +3,7 @@ import 'package:sfi_equipment_tracker/models/account.dart';
 import 'package:sfi_equipment_tracker/screens/manage_admins.dart';
 import 'package:sfi_equipment_tracker/screens/manage_stock.dart';
 import 'package:sfi_equipment_tracker/screens/manage_storage_locations.dart';
+import 'package:sfi_equipment_tracker/screens/transfer_logs_screen.dart';
 
 class AdminNavigationArea extends StatelessWidget {
   const AdminNavigationArea({
@@ -76,6 +77,20 @@ class AdminNavigationArea extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder: (context) => const ManageAdmins(),
+                        ),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    title: const Text(
+                      'Transfer Logs',
+                    ),
+                    selected: currentPageId == 'transfer-logs',
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const TransferLogsScreen(),
                         ),
                       );
                     },
