@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:sfi_equipment_tracker/models/equipment_owner_relationships.dart';
 import 'package:sfi_equipment_tracker/models/global_equipment.dart';
-import 'package:sfi_equipment_tracker/screens/all_equipment.dart';
 import 'package:sfi_equipment_tracker/widgets/modals/equipment_card.dart';
 import 'package:sfi_equipment_tracker/widgets/list_views/equipment_image.dart';
 

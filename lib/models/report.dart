@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sfi_equipment_tracker/models/account.dart';
 import 'package:sfi_equipment_tracker/models/global_equipment.dart';
-import 'package:sfi_equipment_tracker/models/inventory.dart';
-import 'package:sfi_equipment_tracker/models/inventory_owner_relationship.dart';
 
 class Report {
   final String id;

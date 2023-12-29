@@ -1,6 +1,5 @@
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 class EquipmentImage extends StatelessWidget {
   const EquipmentImage({
@@ -89,8 +88,8 @@ class HeroImage extends StatelessWidget {
             );
           } else {
             return Container(
-              decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 121, 121, 121)),
+              decoration: const BoxDecoration(
+                  color: Color.fromARGB(255, 121, 121, 121)),
               width: double.infinity,
               child: ConstrainedBox(
                   constraints: const BoxConstraints(

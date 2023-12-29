@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sfi_equipment_tracker/models/account.dart';
-import 'package:sfi_equipment_tracker/models/inventory_owner_relationship.dart';
 import 'package:sfi_equipment_tracker/models/logs.dart';
 import 'package:sfi_equipment_tracker/widgets/adapted_scaffold.dart';
-import 'package:sfi_equipment_tracker/widgets/form/report_form.dart';
 
 class TransferLogsScreen extends StatelessWidget {
   const TransferLogsScreen({super.key});
@@ -30,14 +28,14 @@ class TransferLogsScreen extends StatelessWidget {
                         final Log log = logs[index];
                         String recipientName = log.recipientUid;
                         String origineeName = log.origineeUid;
-                        accounts.forEach((account) {
+                        for (var account in accounts) {
                           if (log.recipientUid == account.uid) {
                             recipientName = account.name;
                           }
                           if (log.origineeUid == account.uid) {
                             origineeName = account.name;
                           }
-                        });
+                        }
                         return Column(
                           children: [
                             ListTile(

@@ -1,10 +1,8 @@
 // stateless widget that takes an equipment item and displays it in a card
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:sfi_equipment_tracker/models/account.dart';
 import 'package:sfi_equipment_tracker/models/equipment_owner_relationships.dart';
 import 'package:sfi_equipment_tracker/models/global_equipment.dart';
-import 'package:sfi_equipment_tracker/models/inventory.dart';
 import 'package:sfi_equipment_tracker/models/inventory_owner_relationship.dart';
 import 'package:sfi_equipment_tracker/screens/inventory_screen.dart';
 import 'package:sfi_equipment_tracker/widgets/list_views/equipment_image.dart';

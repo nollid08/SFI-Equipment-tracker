@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sfi_equipment_tracker/models/account.dart';
 import 'package:sfi_equipment_tracker/models/global_equipment.dart';
-import 'package:sfi_equipment_tracker/models/inventory.dart';
 import 'package:sfi_equipment_tracker/models/inventory_owner_relationship.dart';
 
 class EquipmentOwnerRelationships {
@@ -12,8 +11,6 @@ class EquipmentOwnerRelationships {
 
   static Future<EquipmentOwnerRelationships> get(
       GlobalEquipmentItem item) async {
-    final db = FirebaseFirestore.instance;
-
     final List<InventoryOwnerRelationship> invOwnRels =
         await InventoryOwnerRelationship.getAllInvOwnRels();
     final List<Owner> allOwners = await generateOwnersList(invOwnRels, item);
@@ -32,8 +29,7 @@ class EquipmentOwnerRelationships {
           invOwnRel.inventoryReference;
       final QuerySnapshot<Map<String, dynamic>> inventorySnapshot =
           await inventoryReference.get();
-      inventorySnapshot.docs
-          .forEach((QueryDocumentSnapshot<Map<String, dynamic>> inventoryItem) {
+      for (var inventoryItem in inventorySnapshot.docs) {
         final Map<String, dynamic> baseItemData = inventoryItem.data();
         final String id = inventoryItem.id;
         final Owner owner = Owner(
@@ -43,13 +39,12 @@ class EquipmentOwnerRelationships {
         if (id == item.id) {
           allOwners.add(owner);
         } else {}
-      });
+      }
     }
     return allOwners;
   }
 
   static Future<List<EquipmentOwnerRelationships>> getAll() {
-    final db = FirebaseFirestore.instance;
     final List<EquipmentOwnerRelationships> allEquipOwnRels = [];
     return GlobalEquipment.get().then((GlobalEquipment globalEquipment) async {
       final List<GlobalEquipmentItem> allEquipment =

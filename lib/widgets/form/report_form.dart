@@ -78,7 +78,6 @@ class _ReportFormState extends State<ReportForm> {
                           {
                             setState(() {
                               inventoryItem = newInventoryItem;
-                              print(inventoryItem!.name);
                             })
                           }
                       },
@@ -189,7 +188,7 @@ class IncidentDescriptionTextBox extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Describe The Incident:',
+        const Text('Describe The Incident:',
             style: TextStyle(fontWeight: FontWeight.bold)),
         FormBuilderTextField(
           name: 'description',
@@ -216,12 +215,12 @@ class SourceInventoryDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<DropdownMenuItem<InventoryOwnerRelationship>> dropdownItems = [];
-    invOwnRels.forEach((InventoryOwnerRelationship invOwnRel) {
+    for (var invOwnRel in invOwnRels) {
       dropdownItems.add(DropdownMenuItem<InventoryOwnerRelationship>(
         value: invOwnRel,
         child: Text(invOwnRel.owner.name),
       ));
-    });
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

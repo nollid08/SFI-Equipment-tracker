@@ -97,10 +97,10 @@ class Account {
     final FirebaseFirestore db = FirebaseFirestore.instance;
     final coaches = await db.collection("users").get();
     final List<Account> accounts = [];
-    coaches.docs.forEach((coach) {
+    for (var coach in coaches.docs) {
       final Account account = Account.getCoachAccountFromSnapshot(coach);
       accounts.add(account);
-    });
+    }
 
     return accounts;
   }
@@ -109,11 +109,11 @@ class Account {
     final FirebaseFirestore db = FirebaseFirestore.instance;
     final storageLocations = await db.collection("storageLocations").get();
     final List<Account> accounts = [];
-    storageLocations.docs.forEach((storageLocation) {
+    for (var storageLocation in storageLocations.docs) {
       final Account account =
           Account.getStorageLocationAccountFromSnapshot(storageLocation);
       accounts.add(account);
-    });
+    }
 
     return accounts;
   }

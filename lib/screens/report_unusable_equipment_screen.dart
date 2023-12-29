@@ -1,10 +1,7 @@
-import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:sfi_equipment_tracker/models/inventory_owner_relationship.dart';
 import 'package:sfi_equipment_tracker/widgets/adapted_scaffold.dart';
-import 'package:sfi_equipment_tracker/widgets/form/equipment_count_chooser.dart';
 import 'package:sfi_equipment_tracker/widgets/form/report_form.dart';
 
 class ReportUnusableEquipmentScreen extends StatelessWidget {
