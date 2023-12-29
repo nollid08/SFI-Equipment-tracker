@@ -22,8 +22,9 @@ class _RestockEquipmentFormState extends State<RestockEquipmentForm> {
   bool autoValidate = true;
   bool readOnly = false;
   bool showSegmentedControl = true;
+  int selectedAmount = 50;
   final _formKey = GlobalKey<FormBuilderState>();
-  void _onChanged(dynamic val) => debugPrint(val.toString());
+  void onSliderChanged(num? val) => selectedAmount = val!.toInt();
 
   @override
   Widget build(BuildContext context) {
@@ -49,9 +50,9 @@ class _RestockEquipmentFormState extends State<RestockEquipmentForm> {
                       child: Divider(),
                     ),
                     EquipmentCountChooser(
-                      onSliderChanged: _onChanged,
+                      onSliderChanged: onSliderChanged,
                       equipmentCount: 200,
-                      initialValue: 50,
+                      initialValue: selectedAmount,
                       customLabel: "Select amount To Be Added",
                       isBold: true,
                     ),
@@ -86,7 +87,7 @@ class _RestockEquipmentFormState extends State<RestockEquipmentForm> {
       if (user != null) {
         final Map data = _formKey.currentState!.value;
         final GlobalEquipmentItem equipment = data["equipment"];
-        final int equipmentQuantity = data["equipment_quantity"].toInt();
+        final int equipmentQuantity = selectedAmount;
         final InventoryOwnerRelationship recipientInventory = data["recipient"];
         GlobalEquipment.updateTotalEquipmentQuantity(
           equipmentId: equipment.id,
@@ -96,6 +97,7 @@ class _RestockEquipmentFormState extends State<RestockEquipmentForm> {
             equipmentId: equipment.id,
             quantity: equipmentQuantity,
             invOwnRel: recipientInventory);
+        _formKey.currentState?.reset();
       } else {
         Navigator.pushReplacement(
           context,

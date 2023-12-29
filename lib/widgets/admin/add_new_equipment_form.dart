@@ -22,8 +22,9 @@ class _AddNewEquipmentFormState extends State<AddNewEquipmentForm> {
   bool autoValidate = true;
   bool readOnly = false;
   bool showSegmentedControl = true;
+  int selectedAmount = 50;
   final _formKey = GlobalKey<FormBuilderState>();
-  void _onChanged(dynamic val) => debugPrint(val.toString());
+  void onSliderChanged(num? val) => selectedAmount = val!.toInt();
   String convertToId(String input) {
     List<String> words = input.split(' ');
     String capitalized = words.map((word) => word.toUpperCase()).join('_');
@@ -54,9 +55,9 @@ class _AddNewEquipmentFormState extends State<AddNewEquipmentForm> {
                       child: Divider(),
                     ),
                     EquipmentCountChooser(
-                      onSliderChanged: _onChanged,
+                      onSliderChanged: onSliderChanged,
                       equipmentCount: 200,
-                      initialValue: 50,
+                      initialValue: selectedAmount,
                       customLabel: "Select amount To Be Added",
                       isBold: true,
                     ),
@@ -122,7 +123,7 @@ class _AddNewEquipmentFormState extends State<AddNewEquipmentForm> {
       if (user != null) {
         final Map data = _formKey.currentState!.value;
         final String equipmentName = data["equipment_name"];
-        final int equipmentQuantity = data["equipment_quantity"].toInt();
+        final int equipmentQuantity = selectedAmount;
         final equipmentImage = data["equipment_image"][0];
         final InventoryOwnerRelationship recipientInventory = data["recipient"];
 
