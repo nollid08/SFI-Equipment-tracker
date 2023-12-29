@@ -123,4 +123,13 @@ class InventoryOwnerRelationship {
 
     return inventoryRefs;
   }
+
+  static InventoryOwnerRelationship getFromAccount(Account account) {
+    if (account.type == AccountType.storageLocation) {
+      return InventoryOwnerRelationship.getStorageLocationFromSnapshot(
+          account.snapshot);
+    } else {
+      return InventoryOwnerRelationship.getCoachFromSnapshot(account.snapshot);
+    }
+  }
 }

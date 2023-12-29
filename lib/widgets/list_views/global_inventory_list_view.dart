@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:sfi_equipment_tracker/widgets/list_views/equipment_card.dart';
+import 'package:sfi_equipment_tracker/models/equipment_owner_relationships.dart';
+import 'package:sfi_equipment_tracker/models/global_equipment.dart';
+import 'package:sfi_equipment_tracker/screens/all_equipment.dart';
+import 'package:sfi_equipment_tracker/widgets/modals/equipment_card.dart';
 import 'package:sfi_equipment_tracker/widgets/list_views/equipment_image.dart';
 
 class GlobalInventoryListView extends StatefulWidget {
@@ -21,59 +24,67 @@ class _GlobalInventoryListViewState extends State<GlobalInventoryListView> {
 
   @override
   Widget build(BuildContext context) {
+    final FirebaseFirestore db = FirebaseFirestore.instance;
     //Using a stream builder to get the data from the Equipment Collection in the db, retrieve all equipment and return its name, total quantity and image in a ListView
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('equipment')
-          .orderBy('name')
-          .snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (snapshot.hasError) {
-          //If there is an error, return a Text widget with the error
-          return const Text('Something went wrong');
-        }
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+        stream: db.collection("equipment").snapshots(),
+        builder: (BuildContext context,
+            AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+          if (snapshot.hasError) {
+            //If there is an error, return a Text widget with the error
+            return const Text('Something went wrong');
+          }
 
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          //If the connection is waiting, return a circular progress indicator
-          return const Center(
-              child: Center(
-            child: SizedBox.square(
-              dimension: 100,
-              child: CircularProgressIndicator(),
-            ),
-          ));
-        }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            //If the connection is waiting, return a circular progress indicator
+            return const Center(
+                child: Center(
+              child: SizedBox.square(
+                dimension: 100,
+                child: CircularProgressIndicator(),
+              ),
+            ));
+          }
 
-        return ListView(
-          children: snapshot.data!.docs.map((DocumentSnapshot document) {
-            final Map<String, dynamic> data =
-                document.data()! as Map<String, dynamic>;
-            final String equipmentId = document.id;
-            final String name = data['name'];
-            final int quantity = data['totalQuantity'];
-            final String imageRef = data['imageRef'];
-            if (name.toLowerCase().contains(widget.searchCriteria)) {
-              return ListTile(
-                leading: EquipmentImage(imageRef: imageRef),
-                title: Text(name),
-                subtitle: Text('Total Quantity: $quantity'),
-                onTap: () {
-                  showModalBottomSheet(
-                    context: context,
-                    builder: (context) {
-                      return EquipmentCard(
-                        equipmentId: equipmentId,
+          if (snapshot.hasData) {
+            final QuerySnapshot<Map<String, dynamic>> data = snapshot.data!;
+            final GlobalEquipment allEquipment =
+                GlobalEquipment.getFromSnapshot(data);
+            return ListView.separated(
+                itemCount: allEquipment.equipmentList.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final GlobalEquipmentItem item =
+                      allEquipment.equipmentList[index];
+                  return ListTile(
+                    leading: EquipmentImage(imageRef: item.imageRef),
+                    title: Text(item.name),
+                    subtitle: Text("Total Quantity: ${item.totalQuantity}"),
+                    onTap: () {
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (context) {
+                          return EquipmentCard(
+                            globalEquipmentItem: item,
+                          );
+                        },
                       );
                     },
                   );
                 },
-              );
-            } else {
-              return const SizedBox.shrink();
-            }
-          }).toList(),
-        );
-      },
-    );
+                separatorBuilder: (BuildContext context, int index) {
+                  final GlobalEquipmentItem item =
+                      allEquipment.equipmentList[index];
+                  if (item.name.toLowerCase().contains(widget.searchCriteria)) {
+                    return const Divider();
+                  } else {
+                    return const SizedBox.shrink();
+                  }
+                });
+          } else {
+            return const Center(
+              child: Text("No equipment found"),
+            );
+          }
+        });
   }
 }

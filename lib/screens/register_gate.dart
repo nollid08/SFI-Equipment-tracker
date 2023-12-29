@@ -57,12 +57,7 @@ class RegisterGate extends StatelessWidget {
                         ConnectionState.none) {
                       return const Text("No data");
                     } else {
-                      return const Center(
-                        child: SizedBox.square(
-                          dimension: 100,
-                          child: CircularProgressIndicator(),
-                        ),
-                      );
+                      return const LoadingScreen();
                     }
                   });
             } else {
@@ -79,15 +74,30 @@ class RegisterGate extends StatelessWidget {
             }
           } else if (snapshot.connectionState == ConnectionState.none) {
             return const Text("No data");
+          } else {
+            return const LoadingScreen();
           }
-          return const Center(
-              child: Center(
-            child: SizedBox.square(
-              dimension: 100,
-              child: CircularProgressIndicator(),
-            ),
-          ));
+          return const LoadingScreen();
         },
+      ),
+    );
+  }
+}
+
+class LoadingScreen extends StatelessWidget {
+  const LoadingScreen({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.blue,
+      child: const Center(
+        child: Image(
+          image: AssetImage('assets/logo.png'),
+          fit: BoxFit.cover,
+        ),
       ),
     );
   }

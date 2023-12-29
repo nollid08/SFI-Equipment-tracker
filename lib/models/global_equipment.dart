@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:sfi_equipment_tracker/models/account.dart';
@@ -19,6 +20,32 @@ class GlobalEquipment {
 
     final QuerySnapshot inventorySnapshot = await equipmentRef.get();
     // Loop over each item in inventory
+    for (final equipmentItem in inventorySnapshot.docs) {
+      final Map<String, dynamic> equipmentItemData =
+          equipmentItem.data() as Map<String, dynamic>;
+
+      final String id = equipmentItem.id;
+      final String name = equipmentItemData["name"];
+      final int totalQuantity = equipmentItemData["totalQuantity"];
+      final String imageRef = equipmentItemData["imageRef"];
+
+      // Get name and image
+
+      equipmentList.add(
+        GlobalEquipmentItem(
+          id: id,
+          name: name,
+          totalQuantity: totalQuantity,
+          imageRef: imageRef,
+        ),
+      );
+    }
+    return GlobalEquipment(equipmentList: equipmentList);
+  }
+
+  static GlobalEquipment getFromSnapshot(QuerySnapshot inventorySnapshot) {
+    final List<GlobalEquipmentItem> equipmentList = [];
+
     for (final equipmentItem in inventorySnapshot.docs) {
       final Map<String, dynamic> equipmentItemData =
           equipmentItem.data() as Map<String, dynamic>;
@@ -120,6 +147,25 @@ class GlobalEquipmentItem {
       required this.name,
       required this.totalQuantity,
       required this.imageRef});
+
+  static Future<GlobalEquipmentItem> get(String equipmentId) async {
+    final FirebaseFirestore db = FirebaseFirestore.instance;
+
+    final DocumentSnapshot<Map<String, dynamic>> equipmentSnapshot =
+        await db.collection("equipment").doc(equipmentId).get();
+    final Map<String, dynamic> equipmentData =
+        equipmentSnapshot.data() as Map<String, dynamic>;
+
+    final String name = equipmentData["name"];
+    final String imageRef = equipmentData["imageRef"];
+    final int totalQuantity = equipmentData["totalQuantity"];
+    return GlobalEquipmentItem(
+      id: equipmentId,
+      name: name,
+      totalQuantity: totalQuantity,
+      imageRef: imageRef,
+    );
+  }
 }
 
 class GlobalEquipmentOwnerRelationships {

@@ -206,7 +206,7 @@ class Inventory {
       "quantityUnusable": quantityUnusable,
     };
     final db = FirebaseFirestore.instance;
-    final reportRef = await db.collection("reports").doc().set(report);
+    await db.collection("reports").doc().set(report);
 
     //Remove the equipment from the inventory
     final equipmentRef = invOwnRel.inventoryReference.doc(inventoryItem.id);

@@ -44,8 +44,6 @@ class TransferLogsScreen extends StatelessWidget {
                               title: Text(
                                   "${log.quantityTransferred} ${log.equipmentId}'s transferred from $origineeName to $recipientName"),
                               subtitle: Text(log.time.toString()),
-                              trailing:
-                                  Text(log.quantityTransferred.toString()),
                             ),
                             const Divider(),
                           ],
