@@ -82,7 +82,7 @@ class HeroImage extends StatelessWidget {
               width: double.infinity,
               child: ConstrainedBox(
                   constraints: const BoxConstraints(
-                    minHeight: 140.0,
+                    minHeight: 200,
                   ),
                   child: Center(child: child)),
             );
@@ -93,7 +93,7 @@ class HeroImage extends StatelessWidget {
               width: double.infinity,
               child: ConstrainedBox(
                   constraints: const BoxConstraints(
-                    minHeight: 140.0,
+                    minHeight: 200,
                   ),
                   child: Center(child: child)),
             );

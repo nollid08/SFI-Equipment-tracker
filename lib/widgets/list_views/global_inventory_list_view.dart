@@ -60,9 +60,14 @@ class _GlobalInventoryListViewState extends State<GlobalInventoryListView> {
                     onTap: () {
                       showModalBottomSheet(
                         context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
                         builder: (context) {
-                          return EquipmentCard(
-                            globalEquipmentItem: item,
+                          return SizedBox(
+                            height: 600,
+                            child: EquipmentCard(
+                              globalEquipmentItem: item,
+                            ),
                           );
                         },
                       );

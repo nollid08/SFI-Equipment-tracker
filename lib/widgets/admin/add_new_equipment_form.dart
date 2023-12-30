@@ -24,6 +24,7 @@ class _AddNewEquipmentFormState extends State<AddNewEquipmentForm> {
   bool showSegmentedControl = true;
   int selectedAmount = 50;
   final _formKey = GlobalKey<FormBuilderState>();
+  final GlobalKey<FormBuilderState> dropdownKey = GlobalKey<FormBuilderState>();
   void onSliderChanged(num? val) => selectedAmount = val!.toInt();
   String convertToId(String input) {
     List<String> words = input.split(' ');
@@ -70,6 +71,7 @@ class _AddNewEquipmentFormState extends State<AddNewEquipmentForm> {
                     ),
                     FormBuilderImagePicker(
                       name: 'equipment_image',
+                      imageQuality: 10,
                       decoration: const InputDecoration(
                         labelText: 'Pick Photo',
                         labelStyle: TextStyle(
@@ -90,7 +92,9 @@ class _AddNewEquipmentFormState extends State<AddNewEquipmentForm> {
                       ),
                       child: Divider(),
                     ),
-                    const SelectInventoryDropdown(),
+                    SelectInventoryDropdown(
+                      dropdownKey: dropdownKey,
+                    ),
                     const Padding(
                       padding: EdgeInsets.symmetric(
                         horizontal: 2,
@@ -127,15 +131,42 @@ class _AddNewEquipmentFormState extends State<AddNewEquipmentForm> {
         final equipmentImage = data["equipment_image"][0];
         final InventoryOwnerRelationship recipientInventory = data["recipient"];
 
-        final bool hasEquipmentRegistered =
-            await GlobalEquipment.registerEquipment(
-          inventoryRef: recipientInventory.inventoryReference,
-          name: equipmentName,
-          quantity: equipmentQuantity,
-          image: equipmentImage,
-        );
+        bool hasEquipmentRegistered = false;
+        if (mounted) {
+          await showDialog<bool>(
+              context: context,
+              builder: (BuildContext context) {
+                return FutureBuilder(
+                    future: GlobalEquipment.registerEquipment(
+                      inventoryRef: recipientInventory.inventoryReference,
+                      name: equipmentName,
+                      quantity: equipmentQuantity,
+                      image: equipmentImage,
+                    ),
+                    builder: (BuildContext context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        hasEquipmentRegistered = snapshot.data!;
+                        Navigator.of(context).pop();
+                        return Container();
+                      } else {
+                        return const AlertDialog(
+                          content: SizedBox.square(
+                            dimension: 200,
+                            //rounded corners
+                            child: Center(
+                                child: SizedBox.square(
+                                    dimension: 100,
+                                    child: CircularProgressIndicator())),
+                          ),
+                        );
+                      }
+                    });
+              });
+        }
+
         if (hasEquipmentRegistered) {
           _formKey.currentState?.reset();
+          dropdownKey.currentState?.reset();
         } else {
           if (mounted) {
             return showDialog<void>(
@@ -143,14 +174,12 @@ class _AddNewEquipmentFormState extends State<AddNewEquipmentForm> {
                 builder: (BuildContext context) {
                   return AlertDialog(
                     title: const Text('Uh Oh!'),
-                    content: const SingleChildScrollView(
-                      child: ListBody(
-                        children: <Widget>[
-                          Text('This item already exists!'),
-                          Text('(Try giving it a different name)'),
-                        ],
-                      ),
-                    ),
+                    // content: const ListBody(
+                    //   children: <Widget>[
+                    //     Text('This item already exists!'),
+                    //     Text('(Try giving it a different name)'),
+                    //   ],
+                    // ),
                     actions: <Widget>[
                       TextButton(
                         child: const Text('I Understand'),
@@ -178,7 +207,10 @@ class _AddNewEquipmentFormState extends State<AddNewEquipmentForm> {
 class SelectInventoryDropdown extends StatelessWidget {
   const SelectInventoryDropdown({
     super.key,
+    required this.dropdownKey,
   });
+
+  final Key dropdownKey;
 
   @override
   Widget build(BuildContext context) {
@@ -218,6 +250,7 @@ class SelectInventoryDropdown extends StatelessWidget {
                     if (invOwnRels != null) {
                       return FormBuilderDropdown(
                         name: "recipient",
+                        key: dropdownKey,
                         items: invOwnRels
                             .map(
                               (invOwnRel) => DropdownMenuItem(

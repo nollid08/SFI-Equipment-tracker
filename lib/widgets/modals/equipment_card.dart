@@ -17,112 +17,102 @@ class EquipmentCard extends StatelessWidget {
     return Card(
       clipBehavior: Clip.hardEdge,
       margin: const EdgeInsets.all(0.0),
-      child: SizedBox(
-        width: double.infinity,
-        height: 800,
-        child: FutureBuilder<EquipmentOwnerRelationships>(
-            future: EquipmentOwnerRelationships.get(globalEquipmentItem),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                    child: Center(
-                  child: SizedBox.square(
-                    dimension: 100,
-                    child: CircularProgressIndicator(),
-                  ),
-                ));
-              } else if (snapshot.connectionState == ConnectionState.done) {
-                if (snapshot.hasData) {
-                  final EquipmentOwnerRelationships equipOwnRels =
-                      snapshot.data!;
-                  return Column(
-                    mainAxisSize: MainAxisSize.max,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      HeroImage(
-                        imageRef: equipOwnRels.item.imageRef,
-                        child: Column(children: [
-                          Text(
-                            equipOwnRels.item.name,
-                            style: const TextStyle(
-                                fontSize: 40,
-                                fontWeight: FontWeight.w900,
-                                color: Colors.white),
-                          ),
-                          Text(
-                            "Total Quantity: ${equipOwnRels.item.totalQuantity}",
-                            style: const TextStyle(
-                              fontSize: 25,
-                              fontWeight: FontWeight.w500,
-                              color: Color.fromARGB(255, 201, 201, 201),
-                            ),
-                          ),
-                        ]),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: [
-                            ListView.separated(
-                                separatorBuilder:
-                                    (BuildContext context, int index) {
-                                  return const Divider();
-                                },
-                                itemCount: equipOwnRels.owners.length,
-                                scrollDirection: Axis.vertical,
-                                shrinkWrap: true,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return ListTile(
-                                    title: Text(
-                                      equipOwnRels.owners[index].account.name,
-                                      style: const TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    subtitle: Text(
-                                      "Quantity: ${equipOwnRels.owners[index].count}",
-                                      style: const TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    onTap: () {
-                                      final Account account =
-                                          equipOwnRels.owners[index].account;
-                                      InventoryOwnerRelationship invOwnRel =
-                                          InventoryOwnerRelationship
-                                              .getFromAccount(account);
-
-                                      Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (BuildContext context) =>
-                                              InventoryScreen(
-                                            invOwnRel: invOwnRel,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  );
-                                })
-                          ],
+      child: FutureBuilder<EquipmentOwnerRelationships>(
+          future: EquipmentOwnerRelationships.get(globalEquipmentItem),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                  child: Center(
+                child: SizedBox.square(
+                  dimension: 100,
+                  child: CircularProgressIndicator(),
+                ),
+              ));
+            } else if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.hasData) {
+                final EquipmentOwnerRelationships equipOwnRels = snapshot.data!;
+                return Column(
+                  mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    HeroImage(
+                      imageRef: equipOwnRels.item.imageRef,
+                      child: Column(children: [
+                        Text(
+                          equipOwnRels.item.name,
+                          style: const TextStyle(
+                              fontSize: 40,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.white),
                         ),
-                      ),
-                    ],
-                  );
-                } else {
-                  return const Center(
-                    child: Text("No equipment found"),
-                  );
-                }
+                        Text(
+                          "Total Quantity: ${equipOwnRels.item.totalQuantity}",
+                          style: const TextStyle(
+                            fontSize: 25,
+                            fontWeight: FontWeight.w500,
+                            color: Color.fromARGB(255, 201, 201, 201),
+                          ),
+                        ),
+                      ]),
+                    ),
+                    Expanded(
+                      child: ListView.separated(
+                          separatorBuilder: (BuildContext context, int index) {
+                            return const Divider();
+                          },
+                          itemCount: equipOwnRels.owners.length,
+                          scrollDirection: Axis.vertical,
+                          shrinkWrap: true,
+                          itemBuilder: (BuildContext context, int index) {
+                            return ListTile(
+                              title: Text(
+                                equipOwnRels.owners[index].account.name,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              subtitle: Text(
+                                "Quantity: ${equipOwnRels.owners[index].count}",
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              onTap: () {
+                                final Account account =
+                                    equipOwnRels.owners[index].account;
+                                InventoryOwnerRelationship invOwnRel =
+                                    InventoryOwnerRelationship.getFromAccount(
+                                        account);
+
+                                Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        InventoryScreen(
+                                      invOwnRel: invOwnRel,
+                                    ),
+                                  ),
+                                  (Route<dynamic> route) => false,
+                                );
+                              },
+                            );
+                          }),
+                    ),
+                  ],
+                );
               } else {
                 return const Center(
                   child: Text("No equipment found"),
                 );
               }
-            }),
-      ),
+            } else {
+              return const Center(
+                child: Text("No equipment found"),
+              );
+            }
+          }),
     );
   }
 }
