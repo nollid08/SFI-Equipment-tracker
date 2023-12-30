@@ -22,7 +22,7 @@ class AllEquipment extends StatelessWidget {
     if (FirebaseAuth.instance.currentUser != null) {
       final uid = FirebaseAuth.instance.currentUser!.uid;
       return AdaptedScaffold(
-        title: 'My Inventory',
+        title: 'All Equipment',
         actions: [
           IconButton(
             iconSize: 30,

@@ -1,3 +1,4 @@
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,10 @@ void main() async {
   FirebaseUIAuth.configureProviders([
     GoogleProvider(clientId: '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'),
   ]);
+  await FirebaseAppCheck.instance.activate(
+    webProvider:
+        ReCaptchaV3Provider('6LfaT0ApAAAAAOx0U6-yMw5nbYHb0lKzgg5IqXAb'),
+  );
   runApp(const MyApp());
 }
 

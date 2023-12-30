@@ -25,9 +25,11 @@ class InventoryListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // final CollectionReference<Map<String, dynamic>> inventoryReference =
+    //     invOwnRel.inventoryReference;
     final CollectionReference<Map<String, dynamic>> inventoryReference =
-        invOwnRel.inventoryReference;
-
+        InventoryOwnerRelationship.getFromAccount(invOwnRel.owner)
+            .inventoryReference;
     final Stream<QuerySnapshot<Map<String, dynamic>>> snapshots =
         inventoryReference.snapshots();
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
@@ -46,7 +48,7 @@ class InventoryListView extends StatelessWidget {
           return const Center(
               child: Center(
             child: SizedBox.square(
-              dimension: 400,
+              dimension: 200,
               child: CircularProgressIndicator(),
             ),
           ));
