@@ -98,8 +98,24 @@ class EquipmentList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final int inventoryItemsCount = inventory.inventory.length;
+    if (inventoryItemsCount == 0) {
+      if (searchCriteria == "") {
+        return const Center(
+          child: Text("No items match search"),
+        );
+      }
+      if (isPersonalInventory) {
+        return const Center(
+          child: Text("No items in your inventory"),
+        );
+      }
+      return const Center(
+        child: Text("No items in inventory"),
+      );
+    }
     return ListView.separated(
-      itemCount: inventory.inventory.length,
+      itemCount: inventoryItemsCount,
       itemBuilder: (BuildContext context, int index) {
         final InventoryItem item = inventory.inventory[index];
         if (item.name.toLowerCase().contains(searchCriteria)) {
