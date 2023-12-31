@@ -100,7 +100,7 @@ class EquipmentList extends StatelessWidget {
   Widget build(BuildContext context) {
     final int inventoryItemsCount = inventory.inventory.length;
     if (inventoryItemsCount == 0) {
-      if (searchCriteria == "") {
+      if (searchCriteria != "") {
         return const Center(
           child: Text("No items match search"),
         );
